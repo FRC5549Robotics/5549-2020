@@ -1,6 +1,6 @@
 # FRC Team 5549's 2019-2020 Robot Code 
 
-This is the code for FRC Team 5549's robot.
+This is the code for FRC Team 5549's robot 2020 Season: Infinite Recharge
 
 # Deploying Code
 
