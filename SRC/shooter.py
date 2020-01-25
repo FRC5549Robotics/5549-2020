@@ -45,11 +45,11 @@ class MyRobot(wpilib.TimedRobot):
         self.sd.putNumber("Top Encoder:", self.topValue)
         self.sd.putNumber("Bottom Encoder:", self.bottomValue)
 
-        if self.xbox.getRawButtom(1):
+        if self.xbox.getRawButton(1):
             self.topShooters.set(0.5) 
             self.bottomShooters.set(-0.5)
         
-        if self.xbox.getRawButtom(4):
+        if self.xbox.getRawButton(4):
           self.topShooters.set(-0.5) 
           self.bottomShooters.set(0.5)
 
