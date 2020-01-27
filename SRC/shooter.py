@@ -53,6 +53,9 @@ class MyRobot(wpilib.TimedRobot):
           self.topShooters.set(-0.5) 
           self.bottomShooters.set(0.5)
 
+        if self.xbox.getRawButton(2):
+          self.topShooters.set(0)
+          self.bottomShooters.set(0)
 
 if __name__ == '__main__':
     ''' running the entire robot program '''
