@@ -2,29 +2,30 @@
 import wpilib
 from ctre import *
 from networktables import NetworkTables
-import drive, indexer, intake, lift, robot, shooter, vision # Importing Other Files
+import dashboard, drive, indexer, intake, lift, robot, shooter, vision # Importing Other Files
 
 
 class MyRobot(wpilib.TimedRobot):
     ''' robot program starts here '''
     def robotInit(self):
         ''' function that is run at the beginning of the match '''
-        # encoders
-        self.topShooter1Encoder = WPI_TalonSRX(4)
-        self.topShooter2wheelEncoder = WPI_TalonSRX(5)
-        self.bottomShooter1 = WPI_TalonSRX(6)
-        self.bottomShooter2Encoder = WPI_TalonSRX(7)
+        # Initialize Classes from Other Files
+        self.shooter = Shooter()
+        self.drive = Drive()
 
-        self.topShooters = wpilib.SpeedControllerGroup(self.topShooter1Encoder, self.topShooter2wheelEncoder)
+        # Set Axis for Drivingdrive, indexer, intake, lift, robot, shooter, vision # Importing Other Files
+        driveLeft = self.leftJoystick.getRawAxis(1)
+        driveRight = self.rightJoystick.getRawAxis(1)
+        driveRotate = self.leftJoystick.getRawAxis(2)
 
-        self.topShooter1Encoder = self.topEncoder
-        self.bottomShooter2Encoder = self.bottomEncoder
-        self.bottomShooters = wpilib.SpeedControllerGroup( self.bottomShooter1, self.bottomShooter2Encoder)
-        # xbox
-        self.xbox = wpilib.JoyStick(2)
+        # Button for Switching Between Arcade and Tank Drive
+        self.driveButtonStatus = Toggle(self.leftJoystick, 2)
 
-        self.sd = NetworkTables.getTable('SmartDashboard')
-        NetworkTables.initialize(server='10.99.91.2')
+        # Driving Button Status
+        self.driveButtonStatus = Toggle(self.leftJoystick, 2)
+
+        # Button for Gear Status
+        gearButtonStatus = Toggle(self.joystick, 1)
 
     def autonomousInit(self):
         ''' function that is run at the beginning of the autonomous phase '''
@@ -40,24 +41,18 @@ class MyRobot(wpilib.TimedRobot):
 
     def teleopPeriodic(self):
         ''' function that is run periodically during the tele-operated phase '''
+        # Changing Between Arcade and Tank Drive
+        if self.driveButtonStatus.on:
+            self.drive.tankDrive(driveLeft, driveRight)
+        if self.driveButtonStatus.off:
+            self.drive.arcadeDrive(driveLeft, driveRotate)
 
-        self.topValue = self.topEncoder.getQuadraturePosition()
-        self.bottomValue = self.bottomEncoder.getQuadraturePosition()
+        # Changing Drive Train Gears
+        self.drive.changeGear(gearButtonStatus.get())
 
-        self.sd.putNumber("Top Encoder:", self.topValue)
-        self.sd.putNumber("Bottom Encoder:", self.bottomValue)
+        'Smart Dashboard'
+        dashboardGearStatus(self.DoubleSolenoidOne.get())
 
-        if self.xbox.getRawButton(1):
-            self.topShooters.set(0.5)
-            self.bottomShooters.set(-0.5)
-
-        if self.xbox.getRawButton(4):
-          self.topShooters.set(-0.5)
-          self.bottomShooters.set(0.5)
-
-        if self.xbox.getRawButton(2):
-          self.topShooters.set(0)
-          self.bottomShooters.set(0)
 
 if __name__ == '__main__':
     ''' running the entire robot program '''
