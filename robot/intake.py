@@ -1,5 +1,9 @@
+''' All Functions relating to Intake'''
 # Importing Packages
 import wpilib
-from ctre import *
-from networktables import NetworkTables
 
+def takeIn():
+    # Function to Take In Ball
+
+def eject():
+    # Function to Eject Balls
