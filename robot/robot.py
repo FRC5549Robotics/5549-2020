@@ -2,7 +2,7 @@
 import wpilib
 from ctre import *
 from networktables import NetworkTables
-import drive, shooter, intake, lift # Importing Other Files
+import drive, indexer, intake, lift, robot, shooter, vision # Importing Other Files
 
 
 class MyRobot(wpilib.TimedRobot):
@@ -48,11 +48,11 @@ class MyRobot(wpilib.TimedRobot):
         self.sd.putNumber("Bottom Encoder:", self.bottomValue)
 
         if self.xbox.getRawButton(1):
-            self.topShooters.set(0.5) 
+            self.topShooters.set(0.5)
             self.bottomShooters.set(-0.5)
-        
+
         if self.xbox.getRawButton(4):
-          self.topShooters.set(-0.5) 
+          self.topShooters.set(-0.5)
           self.bottomShooters.set(0.5)
 
         if self.xbox.getRawButton(2):
