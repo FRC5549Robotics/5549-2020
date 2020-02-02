@@ -4,16 +4,46 @@ from ctre import *
 from networktables import NetworkTables
 import dashboard, drive, indexer, intake, lift, robot, shooter, vision # Importing Other Files
 
+'''
+Logitech Joysticks
+
+Xbox 360 Controller
+
+Axis Mapping
+
+Button Mapping
+
+Motor Mapping
+1: driveLeftMotor1
+2: driveLeftMotor2
+3: driveRightMotor1
+4: driveRightMotor2
+5: shooterTopEncoder1
+6: shooterTopMotor2
+7: shooterBottomEncoder1
+8: shooterBottomMotor2
+9: intakeMotor1
+10: indexerMotor1
+11: indexerMotor2
+12: indexerMotor3
+13: indexerMotor4
+14: indexerMotor4
+15: liftMotor1
+'''
+
 
 class MyRobot(wpilib.TimedRobot):
     ''' robot program starts here '''
     def robotInit(self):
         ''' function that is run at the beginning of the match '''
         # Initialize Classes from Other Files
-        self.shooter = Shooter()
         self.drive = Drive()
+        self.indexer = Indexer()
+        self.intake = Intake()
+        self.lift = Lift()
+        self.shooter = Shooter()
 
-        # Set Axis for Drivingdrive, indexer, intake, lift, robot, shooter, vision # Importing Other Files
+        # Set Axis for Driving
         driveLeft = self.leftJoystick.getRawAxis(1)
         driveRight = self.rightJoystick.getRawAxis(1)
         driveRotate = self.leftJoystick.getRawAxis(2)

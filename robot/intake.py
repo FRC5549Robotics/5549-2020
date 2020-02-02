@@ -2,8 +2,16 @@
 # Importing Packages
 import wpilib
 
-def takeIn():
-    # Function to Take In Ball
+class Intake:
+    def __init__(self):
+    # Motor for Intake
+    intakeMotor = WPI_VictorSPX(9)
+    scaling = 0.5
 
-def eject():
-    # Function to Eject Balls
+    def takeIn():
+        # Function to Take In Ball
+        intakeMotor.set(scaling)
+
+    def eject():
+        # Function to Eject Balls
+        intakeMotor.set(-scaling)

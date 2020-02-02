@@ -15,10 +15,10 @@ class Drive:
         rightDrive = wpilib.SpeedControllerGroup(rightMotor1, rightMotor2)
 
         # Drive Train
-        drive = wpilib.drive.DifferentialDrive(left, right)
+        drive = wpilib.drive.DifferentialDrive(leftDrive, rightDrive)
 
         # Solenoid for Gear Shifting
-        self.DoubleSolenoidOne = wpilib.DoubleSolenoid(0, 1)
+        gearSolenoid = wpilib.DoubleSolenoid(0, 1)
 
     def turnToAngle(angle):
         # Turn Robot to Specified Decimal Values
@@ -27,10 +27,10 @@ class Drive:
         # Switches Gear Mode
         if buttonStatus == True:
             # High Gear
-            self.DoubleSolenoidOne.set(wpilib.DoubleSolenoid.Value.kForward)
+            self.gearSolenoid.set(wpilib.gearSolenoid.Value.kForward)
         elif buttonStatus == False:
             # Low Gear
-            self.DoubleSolenoidOne.set(wpilib.DoubleSolenoid.Value.kReverse)
+            self.gearSolenoid.set(wpilib.gearSolenoid.Value.kReverse)
 
 
     def tankDrive(leftJoystick, rightJoystick):

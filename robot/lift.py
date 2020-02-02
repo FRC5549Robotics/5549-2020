@@ -2,11 +2,16 @@
 # Importing Packages
 import wpilib
 
-def dropDown():
-    # Drops the Lift to Down Position
+class Lift:
+    def __init__(self):
+    liftMotor = WPI_VictorSPX(15)
 
-def liftUp():
-    # Moves the Lift to Up Position
+    def dropDown():
+        # Drops the Lift to Down Position
 
-def runMotor(power):
-    # Runs Motor at Set Power using Percent of Controller
+    def liftUp():
+        # Moves the Lift to Up Position
+
+    def runMotor(power):
+        # Runs Motor at Set Power using Percent of Controller
+        liftMotor.set(power)

@@ -7,7 +7,7 @@ class Shooter:
         # Encoders
         self.topShooter1Encoder = WPI_TalonSRX(4)
         topShooter2 = WPI_TalonSRX(5)
-        bottomShooter1Encoder = WPI_TalonSRX(6)
+        self.bottomShooter1Encoder = WPI_TalonSRX(6)
         bottomShooter2 = WPI_TalonSRX(7)
 
         # Set Top and Bottom Shooters
