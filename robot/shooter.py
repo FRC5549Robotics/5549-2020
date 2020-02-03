@@ -20,16 +20,19 @@ class Shooter:
         self.topShooterRPM = self.topShooter1Encoder.getQuadraturePosition()    # this is not actually rpm
         self.bottomShooterRPM = self.bottomShooter1Encoder.getQuadraturePosition()  # this is not actually rpm
 
-    def shootFar(self, highrpm):
+    def shootFar(self):
         # shoot the ball for set far distance
+        self.highrpm = 0 # add later
         self.initializeShooter(highrpm)
 
-    def shootMid(self, midrpm):
+    def shootMid(self):
         # shoot the ball for set medium distance
+        self.midrpm = 0 # add later
         self.initializeShooter(midrpm)
 
-    def shootShort(self, lowrpm):
+    def shootShort(self):
         # shoot the ball for set short distance
+        self.lowrpm = 0 # add later
         self.initializeShooter(lowrpm)
 
     def shootAuto(self, distance):
@@ -41,3 +44,4 @@ class Shooter:
         # only for shooter functions
         self.topMotors.set(rpm)
         self.bottomMotors.set(rpm)
+lowrpm
