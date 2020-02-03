@@ -5,20 +5,20 @@ import wpilib
 class Drive:
     def __init__(self):
         # Motors for Drive Train
-        leftMotor1 = WPI_TalonSRX(1)
-        leftMotor2 = WPI_TalonSRX(2)
-        rightMotor1 = WPI_TalonSRX(3)
-        rightMotor2 = WPI_TalonSRX(4)
+        self.leftMotor1 = WPI_TalonSRX(1)
+        self.leftMotor2 = WPI_TalonSRX(2)
+        self.rightMotor1 = WPI_TalonSRX(3)
+        self.rightMotor2 = WPI_TalonSRX(4)
 
         # Set Controller Grous
-        leftDrive = wpilib.SpeedControllerGroup(leftMotor1, rightMotor2)
-        rightDrive = wpilib.SpeedControllerGroup(rightMotor1, rightMotor2)
+        self.leftDrive = wpilib.SpeedControllerGroup(leftMotor1, rightMotor2)
+        self.rightDrive = wpilib.SpeedControllerGroup(rightMotor1, rightMotor2)
 
         # Drive Train
-        drive = wpilib.drive.DifferentialDrive(leftDrive, rightDrive)
+        self.drive = wpilib.DifferentialDrive(leftDrive, rightDrive)
 
         # Solenoid for Gear Shifting
-        gearSolenoid = wpilib.DoubleSolenoid(0, 1)
+        self.gearSolenoid = wpilib.DoubleSolenoid(0, 1)
 
     def turnToAngle(angle):
         # Turn Robot to Specified Decimal Values

@@ -6,7 +6,9 @@ from networktables import NetworkTables
 sd = NetworkTables.getTable('SmartDashboard')
 NetworkTables.initialize(server='10.99.91.2')
 
+
 def dashboardGearStatus(solenoidValue):
+    # Display High/Low Gear to Dashboard
     if solenoidValue == 1:
         sd.putString("Gear Shift: ", "High Gear")
     elif solenoidValue == 2:

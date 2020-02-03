@@ -4,7 +4,7 @@ import wpilib
 
 class Lift:
     def __init__(self):
-    liftMotor = WPI_VictorSPX(15)
+    self.liftMotor = WPI_VictorSPX(15)
 
     def dropDown():
         # Drops the Lift to Down Position
@@ -12,6 +12,6 @@ class Lift:
     def liftUp():
         # Moves the Lift to Up Position
 
-    def runMotor(power):
+    def runMotor(self, power):
         # Runs Motor at Set Power using Percent of Controller
-        liftMotor.set(power)
+        self.liftMotor.set(power)
