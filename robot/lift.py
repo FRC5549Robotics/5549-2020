@@ -1,17 +1,20 @@
-''' All Functions relating to Lift'''
-# Importing Packages
+""""" lift functions """
+# importing packages
 import wpilib
+from ctre import *
 
 class Lift:
     def __init__(self):
-    self.liftMotor = WPI_VictorSPX(15)
+        self.liftMotor = WPI_VictorSPX(15)
 
-    def dropDown():
-        # Drops the Lift to Down Position
+    def dropDown(self):
+        # drops the lift to down position
+        pass
 
-    def liftUp():
-        # Moves the Lift to Up Position
+    def liftUp(self):
+        # moves the lift to up position
+        pass
 
     def runMotor(self, power):
-        # Runs Motor at Set Power using Percent of Controller
+        # runs motor at set power
         self.liftMotor.set(power)

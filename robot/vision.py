@@ -1,9 +1,11 @@
-''' All Functions relating to Vision'''
-# Importing Packages
+""" vision functions """
+# importing packages
 import wpilib
 
 def getDistance():
-    # Finds Distance to Target using Limelight
+    # finds distance to target using limelight
+    pass
 
 def getAngle():
-    # Finds Angle to Target using Limelight
+    # finds angle to target using limelight
+    pass

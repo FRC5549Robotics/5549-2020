@@ -1,44 +1,46 @@
-''' All Functions relating to Drive'''
-# Importing Packages
+""" drive functions """
+# importing packages
 import wpilib
+from ctre import *
+from wpilib.drive import DifferentialDrive
 
 class Drive:
     def __init__(self):
-        # Motors for Drive Train
+        # drive train motors
         self.leftMotor1 = WPI_TalonSRX(1)
         self.leftMotor2 = WPI_TalonSRX(2)
         self.rightMotor1 = WPI_TalonSRX(3)
         self.rightMotor2 = WPI_TalonSRX(4)
 
-        # Set Controller Grous
-        self.leftDrive = wpilib.SpeedControllerGroup(leftMotor1, rightMotor2)
-        self.rightDrive = wpilib.SpeedControllerGroup(rightMotor1, rightMotor2)
+        # drive train motor groups
+        self.leftDrive = wpilib.SpeedControllerGroup(self.leftMotor1, self.rightMotor2)
+        self.rightDrive = wpilib.SpeedControllerGroup(self.rightMotor1, self.rightMotor2)
 
-        # Drive Train
-        self.drive = wpilib.DifferentialDrive(leftDrive, rightDrive)
+        # setting up differential drive
+        self.drive = DifferentialDrive(self.leftDrive, self.rightDrive)
 
-        # Solenoid for Gear Shifting
+        # pneumatic solenoid for gear shifting
         self.gearSolenoid = wpilib.DoubleSolenoid(0, 1)
 
-    def turnToAngle(angle):
-        # Turn Robot to Specified Decimal Values
+    def turnToAngle(self, angle):
+        # turn robot to specified angle values using navx
+        pass
 
-    def changeGear(buttonStatus):
-        # Switches Gear Mode
-        if buttonStatus == True:
-            # High Gear
-            self.gearSolenoid.set(wpilib.gearSolenoid.Value.kForward)
-        elif buttonStatus == False:
-            # Low Gear
-            self.gearSolenoid.set(wpilib.gearSolenoid.Value.kReverse)
+    def changeGear(self, buttonStatus):
+        # switches gear mode
+        if buttonStatus is True:
+            # high gear
+            self.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
+        elif buttonStatus is False:
+            # low gear
+            self.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
 
-
-    def tankDrive(leftJoystick, rightJoystick):
-        # Tank Drive at Set Scaling
+    def tankDrive(self, leftJoystickAxis, rightJoystickAxis):
+        # tank drive at set scaling
         scaling = 0.65
-        drive.tankDrive(leftJoystick * scaling, rightJoystick * scaling)
+        self.drive.tankDrive(leftJoystickAxis * scaling, rightJoystickAxis * scaling)
 
-    def arcadeDrive(leftJoystick, rotate):
-        # Arcade Drive at Set Scaling
+    def arcadeDrive(self, leftJoystick, rotateAxis):
+        # arcade drive at set scaling
         scaling = 0.65
-        drive.arcadeDrive(leftJoystick * scaling, rotate * scaling)
+        self.drive.arcadeDrive(leftJoystick * scaling, rotateAxis * scaling)

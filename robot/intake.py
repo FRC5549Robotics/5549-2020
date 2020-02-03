@@ -1,17 +1,19 @@
-''' All Functions relating to Intake'''
-# Importing Packages
+""" intake functions """
+# importing packages
 import wpilib
+from ctre import *
 
 class Intake:
     def __init__(self):
-    # Motor for Intake
-    self.intakeMotor = WPI_VictorSPX(9)
-    scaling = 0.5
+        # intake motor
+        self.intakeMotor = WPI_VictorSPX(9)
 
-    def takeIn():
-        # Function to Take In Ball
+    def takeIn(self):
+        # taking in the ball at set scaling
+        scaling = 0.50
         self.intakeMotor.set(scaling)
 
-    def eject():
-        # Function to Eject Balls
+    def eject(self):
+        # ejecting ball at set scaling
+        scaling = 0.50
         self.intakeMotor.set(-scaling)

@@ -1,10 +1,23 @@
-''' import statements go at the top of the program '''
+"""
+Infinite Recharge - Scorpio from FRC 5549: Gryphon Robotics
+"""
+# import packages
 import wpilib
 from ctre import *
 from networktables import NetworkTables
-import dashboard, drive, indexer, intake, lift, robot, shooter, vision # Importing Other Files
+from robotpy_ext.control.toggle import Toggle
+from robot import dashboard, drive, indexer, intake, lift, shooter, vision
 
-'''
+# initializing classes
+dashboard: dashboard.Dashboard
+drive: drive.Drive
+indexer: indexer.Indexer
+intake: intake.Intake
+lift: lift.Lift
+shooter: shooter.Shooter
+vision: vision.Vision
+
+"""
 Logitech Joysticks
 
 Xbox 360 Controller
@@ -29,21 +42,13 @@ Motor Mapping
 13: indexerMotor4
 14: indexerMotor4
 15: liftMotor1
-'''
+"""
 
-
-class MyRobot(wpilib.TimedRobot):
-    ''' robot program starts here '''
+class Scorpio(wpilib.TimedRobot):
     def robotInit(self):
-        ''' function that is run at the beginning of the match '''
-        # Initialize Classes from Other Files
-        self.drive = Drive()
-        self.indexer = Indexer()
-        self.intake = Intake()
-        self.lift = Lift()
-        self.shooter = Shooter()
+        """ function that is run at the beginning of the match """
 
-        # Set Axis for Driving
+        # set axis for driving
         driveLeft = self.leftJoystick.getRawAxis(1)
         driveRight = self.rightJoystick.getRawAxis(1)
         driveRotate = self.leftJoystick.getRawAxis(2)
@@ -86,4 +91,4 @@ class MyRobot(wpilib.TimedRobot):
 
 if __name__ == '__main__':
     ''' running the entire robot program '''
-    wpilib.run(MyRobot)
+    wpilib.run(Scorpio)
