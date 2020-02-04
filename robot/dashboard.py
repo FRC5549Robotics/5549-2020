@@ -3,10 +3,14 @@
 from networktables import NetworkTables
 
 class Dashboard:
-    def __init__(self):
+    def __init__(self, isTest: bool):
         # getting shuffleboard
         self.dashboard = NetworkTables.getTable('SmartDashboard')
-        NetworkTables.initialize(server='10.99.91.2')
+
+        if isTest:
+            self.dashboard.initialize(server="10.99.91.2")
+        else:
+            self.dashboard.initialize(server='10.55.49.2')
 
     def dashboardGearStatus(self, solenoidValue):
         # display high/low gear to dashboard

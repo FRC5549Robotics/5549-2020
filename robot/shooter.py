@@ -23,17 +23,17 @@ class Shooter:
     def shootFar(self):
         # shoot the ball for set far distance
         self.highrpm = 0 # add later
-        self.initializeShooter(highrpm)
+        self.initializeShooter(self.highrpm)
 
     def shootMid(self):
         # shoot the ball for set medium distance
         self.midrpm = 0 # add later
-        self.initializeShooter(midrpm)
+        self.initializeShooter(self.midrpm)
 
     def shootShort(self):
         # shoot the ball for set short distance
         self.lowrpm = 0 # add later
-        self.initializeShooter(lowrpm)
+        self.initializeShooter(self.lowrpm)
 
     def shootAuto(self, distance):
         # automatically shoot balls given distance
@@ -44,4 +44,3 @@ class Shooter:
         # only for shooter functions
         self.topMotors.set(rpm)
         self.bottomMotors.set(rpm)
-lowrpm

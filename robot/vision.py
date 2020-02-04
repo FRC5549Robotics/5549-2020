@@ -1,16 +1,18 @@
 """ vision functions """
 # importing packages
 import wpilib
+from networktables import NetworkTables
 import math
 
-class Shooter:
-    __init__():
-    self.heightCamera = 'int' # change later
-    self.heightTarget = 'int' # change later
-    self.angleMount = 'int' # change later
-    self.verticalAngleToTarget = NetworkTables.getTable("limelight").getNumber('ty'); # finds vertical angle to target 
-    self.horizontalAngleToTarget = NetworkTables.getTable("limelight").getNumber('tx'); # finds horizontal angle to target
+class Vision:
+    def __init__(self):
+        self.heightCamera = 0 # change later
+        self.heightTarget = 0 # change later
+        self.angleMount = 0 # change later
 
-    def getDistance():
+        self.verticalAngleToTarget = NetworkTables.getTable("limelight").getNumber('ty') # finds vertical angle to target
+        self.horizontalAngleToTarget = NetworkTables.getTable("limelight").getNumber('tx') # finds horizontal angle to target
+
+    def getDistance(self):
         # finds distance to target using limelight
-        self.distanceToTarget = (heightTarget - heightCamera) / math.tan(angleMount + angleToTarget)
+        self.distanceToTarget = (self.heightTarget - self.heightCamera) / math.tan(self.angleMount + self.angleToTarget)

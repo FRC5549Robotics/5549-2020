@@ -6,16 +6,15 @@ import wpilib
 from ctre import *
 from networktables import NetworkTables
 from robotpy_ext.control.toggle import Toggle
-from robot import dashboard, drive, indexer, intake, lift, shooter, vision
+from robot import *
 
-# initializing classes
-dashboard: dashboard.Dashboard
-drive: drive.Drive
-indexer: indexer.Indexer
-intake: intake.Intake
-lift: lift.Lift
-shooter: shooter.Shooter
-vision: vision.Vision
+dashboard = Dashboard(False)
+drive = Drive()
+indexer = Indexer()
+intake = Intake()
+lift = Lift()
+shooter = Shooter()
+vision = Vision()
 
 """
 Logitech Joysticks
@@ -48,11 +47,6 @@ class Scorpio(wpilib.TimedRobot):
     def robotInit(self):
         """ function that is run at the beginning of the match """
 
-        # set axis for driving
-        driveLeft = self.leftJoystick.getRawAxis(1)
-        driveRight = self.rightJoystick.getRawAxis(1)
-        driveRotate = self.leftJoystick.getRawAxis(2)
-
         # Button for Switching Between Arcade and Tank Drive
         self.driveButtonStatus = Toggle(self.leftJoystick, 2)
 
@@ -60,7 +54,7 @@ class Scorpio(wpilib.TimedRobot):
         self.driveButtonStatus = Toggle(self.leftJoystick, 2)
 
         # Button for Gear Status
-        gearButtonStatus = Toggle(self.joystick, 1)
+        self.gearButtonStatus = Toggle(self.joystick, 1)
 
     def autonomousInit(self):
         ''' function that is run at the beginning of the autonomous phase '''
@@ -76,6 +70,11 @@ class Scorpio(wpilib.TimedRobot):
 
     def teleopPeriodic(self):
         ''' function that is run periodically during the tele-operated phase '''
+        # get joystick values
+        driveLeft = self.leftJoystick.getRawAxis(1)
+        driveRight = self.rightJoystick.getRawAxis(1)
+        driveRotate = self.leftJoystick.getRawAxis(2)
+
         # Changing Between Arcade and Tank Drive
         if self.driveButtonStatus.on:
             self.drive.tankDrive(driveLeft, driveRight)
@@ -83,10 +82,10 @@ class Scorpio(wpilib.TimedRobot):
             self.drive.arcadeDrive(driveLeft, driveRotate)
 
         # Changing Drive Train Gears
-        self.drive.changeGear(gearButtonStatus.get())
+        self.drive.changeGear(self.gearButtonStatus.get())
 
         'Smart Dashboard'
-        dashboardGearStatus(self.DoubleSolenoidOne.get())
+        self.dashboardGearStatus(self.DoubleSolenoidOne.get())
 
 
 if __name__ == '__main__':
