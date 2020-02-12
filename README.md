@@ -9,3 +9,25 @@ This is the code for FRC Team 5549's robot 2020 Season: Infinite Recharge
 3. Deploy code to the robot using `py -3 robot.py deploy`. Add `--no-version-check` to the end you are deploying during the offseason.
 
 Optional: Feel free to use the deploy scripts found [here](https://github.com/FRC5549Robotics/5549-Scripts).
+
+# Sensors 
+
+## Drive Train
+- **2x Enconder**
+- Color Sensor (To See Field Lines) *Optional*
+- Ultrasonic Front
+- NavX Gyro
+- 1x Camera
+
+
+## Intake
+
+## Indexer
+
+## Climb
+
+## Semicircle
+- 1x Ultrasonic at Entry
+
+## Shooter
+- **2x Encoders**
