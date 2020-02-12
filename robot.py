@@ -8,14 +8,6 @@ from networktables import NetworkTables
 from robotpy_ext.control.toggle import Toggle
 from robot import *
 
-dashboard = Dashboard(False)
-drive = Drive()
-indexer = Indexer()
-intake = Intake()
-lift = Lift()
-shooter = Shooter()
-vision = Vision()
-
 """
 Logitech Joysticks
 
@@ -43,7 +35,9 @@ Motor Mapping
 15: liftMotor1
 """
 
+
 class Scorpio(wpilib.TimedRobot):
+
     def robotInit(self):
         """ function that is run at the beginning of the match """
 
@@ -55,6 +49,18 @@ class Scorpio(wpilib.TimedRobot):
 
         # Button for Gear Status
         self.gearButtonStatus = Toggle(self.joystick, 1)
+
+        # init networktables
+        NetworkTables.initialize(server="10.55.49.2")
+
+        # init variables which have wpilib objects
+        self.MODdrive = Drive()
+        self.MODindexer = Indexer()
+        self.MODintake = Intake()
+        self.MODlift = Lift()
+        self.MODshooter = Shooter()
+        self.MODdashboard = Dashboard()
+        self.MODvision = Vision()
 
     def autonomousInit(self):
         ''' function that is run at the beginning of the autonomous phase '''
@@ -76,9 +82,9 @@ class Scorpio(wpilib.TimedRobot):
         driveRotate = self.leftJoystick.getRawAxis(2)
 
         # Changing Between Arcade and Tank Drive
-        if self.driveButtonStatus.on:
+        if self.driveButtonStatus.get():
             self.drive.tankDrive(driveLeft, driveRight)
-        if self.driveButtonStatus.off:
+        else:
             self.drive.arcadeDrive(driveLeft, driveRotate)
 
         # Changing Drive Train Gears

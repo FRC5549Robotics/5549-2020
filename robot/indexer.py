@@ -1,20 +1,21 @@
 """ indexer functions """
 # importing packages
-import wpilib
+
+from custom import SpeedControllerGroup_M
 from ctre import *
 
 class Indexer:
     def __init__(self):
-        self.indexerMotor1 = WPI_VictorSPX(10)
-        self.indexerMotor2 = WPI_VictorSPX(11)
-        self.indexerMotor3 = WPI_VictorSPX(12)
-        self.indexerMotor4 = WPI_VictorSPX(13)
-        self.indexerMotor5 = WPI_VictorSPX(14)
+        self.indexer = SpeedControllerGroup_M(WPI_VictorSPX(10), WPI_VictorSPX(11), WPI_VictorSPX(12), WPI_VictorSPX(13), WPI_VictorSPX(14))
 
     def forward(self):
-        # run indexer forward
-        pass
+        self.indexer.set(1.0)
+        return
+
+    def stop(self):
+        self.indexer.stopMotor()
+        return
 
     def reverse(self):
-        # run indexer reversed
-        pass
+        self.indexer.set(-1)
+        return
