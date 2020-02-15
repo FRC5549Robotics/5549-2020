@@ -7,10 +7,8 @@ class Dashboard:
         # getting shuffleboard
         self.dashboard = NetworkTables.getTable('SmartDashboard')
 
-        if isTest:
-            self.dashboard.initialize(server="10.99.91.2")
-        else:
-            self.dashboard.initialize(server='10.55.49.2')
+        # initializing dashboard    
+        self.dashboard.initialize(server='10.55.49.2')
 
     def dashboardGearStatus(self, solenoidValue):
         # display high/low gear to dashboard

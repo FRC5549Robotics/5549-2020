@@ -7,10 +7,11 @@ from wpilib.drive import DifferentialDrive
 class Drive:
     def __init__(self):
         # drive train motors
-        self.leftMotor1 = WPI_TalonSRX(1)
-        self.leftMotor2 = WPI_TalonSRX(2)
-        self.rightMotor1 = WPI_TalonSRX(3)
-        self.rightMotor2 = WPI_TalonSRX(4)
+        # from front view
+        self.leftMotor1 = WPI_TalonSRX(13)
+        self.leftMotor2 = WPI_Talon(14)
+        self.rightMotor1 = WPI_TalonSRX(15)
+        self.rightMotor2 = WPI_Talon(16)
 
         # drive train motor groups
         self.leftDrive = wpilib.SpeedControllerGroup(self.leftMotor1, self.rightMotor2)

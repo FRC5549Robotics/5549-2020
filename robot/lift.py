@@ -5,7 +5,8 @@ from ctre import *
 
 class Lift:
     def __init__(self):
-        self.liftMotor = WPI_VictorSPX(15)
+        # lift motor
+        self.liftMotor = WPI_Victor(10)
 
     def dropDown(self):
         # drops the lift to down position

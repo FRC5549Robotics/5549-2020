@@ -13,6 +13,7 @@ drive = Drive()
 indexer = Indexer()
 intake = Intake()
 lift = Lift()
+semicircle = Semicircle()
 shooter = Shooter()
 vision = Vision()
 
@@ -43,17 +44,27 @@ Motor Mapping
 15: liftMotor1
 """
 
-class Scorpio(wpilib.TimedRobot):
+class Manticore(wpilib.TimedRobot):
     def robotInit(self):
         """ function that is run at the beginning of the match """
 
-        # Button for Switching Between Arcade and Tank Drive
+        # setting joysticks and xbox controllers
+        leftJoystick = wpilib.Joystick(1)
+        rightJoystick = wpilib.Joystick(2)
+        xbox = wpilib.Joystick(3)  
+
+        # get joystick values
+        self.driveLeft = self.leftJoystick.getRawAxis(1)
+        self.driveRight = self.rightJoystick.getRawAxis(1)
+        self.driveRotate = self.leftJoystick.getRawAxis(2)
+
+        # button for switching between arcade and tank drive
         self.driveButtonStatus = Toggle(self.leftJoystick, 2)
 
-        # Driving Button Status
+        # driving button status
         self.driveButtonStatus = Toggle(self.leftJoystick, 2)
 
-        # Button for Gear Status
+        # button for gear status
         self.gearButtonStatus = Toggle(self.joystick, 1)
 
     def autonomousInit(self):
@@ -70,18 +81,14 @@ class Scorpio(wpilib.TimedRobot):
 
     def teleopPeriodic(self):
         ''' function that is run periodically during the tele-operated phase '''
-        # get joystick values
-        driveLeft = self.leftJoystick.getRawAxis(1)
-        driveRight = self.rightJoystick.getRawAxis(1)
-        driveRotate = self.leftJoystick.getRawAxis(2)
 
-        # Changing Between Arcade and Tank Drive
-        if self.driveButtonStatus.on:
+        # changing between arcade and tank drive
+        if self.driveButtonStatus.get() is True:
             self.drive.tankDrive(driveLeft, driveRight)
-        if self.driveButtonStatus.off:
+        else:
             self.drive.arcadeDrive(driveLeft, driveRotate)
 
-        # Changing Drive Train Gears
+        # changing drive train gears
         self.drive.changeGear(self.gearButtonStatus.get())
 
         'Smart Dashboard'
