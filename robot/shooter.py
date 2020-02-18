@@ -7,9 +7,9 @@ class Shooter:
     def __init__(self):
         # shooter motors and encoders
         self.topShooter1Encoder = WPI_TalonSRX(1)
-        self.topShooter2 = WPI_Talon(2)
+        self.topShooter2 = WPI_VictorSPX(2)
         self.bottomShooter1Encoder = WPI_TalonSRX(3)
-        self.bottomShooter2 = WPI_Talon(4)
+        self.bottomShooter2 = WPI_VictorSPX(4)
 
         # shooter motor groups
         self.topMotors = wpilib.SpeedControllerGroup(self.topShooter1Encoder, self.topShooter2)

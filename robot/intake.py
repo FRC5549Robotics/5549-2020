@@ -6,7 +6,7 @@ from ctre import *
 class Intake:
     def __init__(self):
         # intake motor
-        self.intakeMotor = WPI_VictorSRX(6)
+        self.intakeMotor = WPI_TalonSRX(6)
 
     def takeIn(self):
         # taking in the ball at set scaling

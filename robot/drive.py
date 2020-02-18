@@ -9,9 +9,9 @@ class Drive:
         # drive train motors
         # from front view
         self.leftMotor1 = WPI_TalonSRX(13)
-        self.leftMotor2 = WPI_Talon(14)
+        self.leftMotor2 = WPI_VictorSPX(14)
         self.rightMotor1 = WPI_TalonSRX(15)
-        self.rightMotor2 = WPI_Talon(16)
+        self.rightMotor2 = WPI_VictorSPX(16)
 
         # drive train motor groups
         self.leftDrive = wpilib.SpeedControllerGroup(self.leftMotor1, self.rightMotor2)
