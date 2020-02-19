@@ -19,12 +19,12 @@ vision = Vision()
 
 """
 Logitech Joysticks
+Left:
+
+Right:
 
 Xbox 360 Controller
-
-Axis Mapping
-
-Button Mapping
+Right Trigger(3): Shoot
 
 Motor Mapping
 1: driveLeftMotor1
@@ -64,8 +64,11 @@ class Manticore(wpilib.TimedRobot):
         # driving button status
         self.driveButtonStatus = Toggle(self.leftJoystick, 2)
 
-        # button for gear status
+        # button for gear shifting
         self.gearButtonStatus = Toggle(self.joystick, 1)
+
+        # button to start shooter
+        self.shooterLaunch = self.xbox.getRawAxis(3)
 
     def autonomousInit(self):
         ''' function that is run at the beginning of the autonomous phase '''
@@ -91,10 +94,15 @@ class Manticore(wpilib.TimedRobot):
         # changing drive train gears
         self.drive.changeGear(self.gearButtonStatus.get())
 
+        if self.shooterLaunch is True
+            self.shooter.initializeShooter(0.5)
+        else: 
+            self.shooter.initializeShooter(0)
+
         'Smart Dashboard'
         self.dashboardGearStatus(self.DoubleSolenoidOne.get())
 
 
 if __name__ == '__main__':
     ''' running the entire robot program '''
-    wpilib.run(Scorpio)
+    wpilib.run(Manticore)
