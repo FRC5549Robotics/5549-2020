@@ -2,7 +2,7 @@
 # importing packages
 import wpilib
 from ctre import *
-from wpilib.drive import DifferentialDrive
+import wpilib.drive
 
 class Drive:
     def __init__(self):
@@ -18,7 +18,7 @@ class Drive:
         self.rightDrive = wpilib.SpeedControllerGroup(self.rightMotor1, self.rightMotor2)
 
         # setting up differential drive
-        self.drive = DifferentialDrive(self.leftDrive, self.rightDrive)
+        self.drive = wpilib.drive.DifferentialDrive(self.leftDrive, self.rightDrive)
 
         # pneumatic solenoid for gear shifting
         self.gearSolenoid = wpilib.DoubleSolenoid(0, 1)

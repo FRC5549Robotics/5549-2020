@@ -6,6 +6,8 @@ import wpilib
 from ctre import *
 from networktables import NetworkTables
 from robotpy_ext.control.toggle import Toggle
+from wpilib.drive._drive import DifferentialDrive
+
 from robot import *
 
 """
@@ -36,33 +38,24 @@ Motor Mapping
 15: liftMotor1
 """
 
-dashboard = Dashboard(False)
-drive = Drive()
-indexer = Indexer()
-intake = Intake()
-lift = Lift()
-semicircle = Semicircle()
-shooter = Shooter()
-vision = Vision()
-
 class Manticore(wpilib.TimedRobot):
     def robotInit(self):
         """ function that is run at the beginning of the match """
 
-        # # adding functions
-        # dashboard: dashboard.Dashboard
-        # drive: drive.Drive
-        # indexer: indexer.Indexer
-        # intake: intake.Intake
-        # lift: lift.Lift
-        # semicircle: semicircle.Semicircle
-        # shooter: shooter.Shooter
-        # vision: vision.Vision
+        # adding functions
+        self.dashboard = Dashboard()
+        self.drive = Drive()
+        self.indexer = Indexer()
+        self.intake = Intake()
+        self.lift = Lift()
+        self.semicircle = Semicircle()
+        self.shooter = Shooter()
+        self.vision = Vision()
 
         # setting joysticks and xbox controllers
-        leftJoystick = wpilib.Joystick(1)
-        rightJoystick = wpilib.Joystick(2)
-        xbox = wpilib.Joystick(3)  
+        self.leftJoystick = wpilib.Joystick(0)
+        self.rightJoystick = wpilib.Joystick(1)
+        self.xbox = wpilib.Joystick(2)
 
         # get joystick values
         self.driveLeft = self.leftJoystick.getRawAxis(1)
@@ -76,7 +69,7 @@ class Manticore(wpilib.TimedRobot):
         self.driveButtonStatus = Toggle(self.leftJoystick, 2)
 
         # button for gear shifting
-        self.gearButtonStatus = Toggle(self.joystick, 1)
+        self.gearButtonStatus = Toggle(self.rightJoystick, 1)
 
         # button to start shooter
         self.shooterLaunch = self.xbox.getRawAxis(3)
@@ -101,28 +94,28 @@ class Manticore(wpilib.TimedRobot):
 
         # changing between arcade and tank drive
         if self.driveButtonStatus.get() is True:
-            self.drive.tankDrive(driveLeft, driveRight)
+            Drive.tankDrive(self.drive, self.driveLeft, self.driveRight)
         else:
-            self.drive.arcadeDrive(driveLeft, driveRotate)
+            Drive.arcadeDrive(self.drive, self.driveLeft, self.driveRotate)
 
         # changing drive train gears
-        self.drive.changeGear(self.gearButtonStatus.get())
+        Drive.changeGear(self.gearButtonStatus.get())
 
         if self.shooterLaunch is True:
-            self.shooter.initializeShooter(0.5)
-        else: 
-            self.shooter.initializeShooter(0)
+            Shooter.initializeShooter(0.5)
+        else:
+            Shooter.initializeShooter(0)
 
         if self.intakeBall is True:
-                self.intake.takein()
-                self.indexer.forward()
-                self.semicircle.foward()
+                Intake.takein()
+                Indexer.forward()
+                Semicircle.forward()
         else:
             pass
 
 
         'Smart Dashboard'
-        self.dashboardGearStatus(self.DoubleSolenoidOne.get())
+        # self.dashboardGearStatus(self.DoubleSolenoidOne.get())
 
 
 if __name__ == '__main__':

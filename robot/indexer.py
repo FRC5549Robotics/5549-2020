@@ -6,7 +6,7 @@ from ctre import *
 class Indexer:
     def __init__(self):
         # indexer motors
-        self.flatIndexer = WPI_VictorSRX(7)
+        self.flatIndexer = WPI_TalonSRX(7)
         # from front view
         self.verticalIndexerLeft = WPI_TalonSRX(5) 
         self.verticalIndexerRight = WPI_VictorSPX(11)
