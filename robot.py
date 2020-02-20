@@ -8,15 +8,6 @@ from networktables import NetworkTables
 from robotpy_ext.control.toggle import Toggle
 from robot import *
 
-dashboard = Dashboard(False)
-drive = Drive()
-indexer = Indexer()
-intake = Intake()
-lift = Lift()
-semicircle = Semicircle()
-shooter = Shooter()
-vision = Vision()
-
 """
 Logitech Joysticks
 Left:
@@ -25,6 +16,7 @@ Right:
 
 Xbox 360 Controller
 Right Trigger(3): Shoot
+A Button (1): Intake, Indexer, Semicircle
 
 Motor Mapping
 1: driveLeftMotor1
@@ -44,9 +36,28 @@ Motor Mapping
 15: liftMotor1
 """
 
+dashboard = Dashboard(False)
+drive = Drive()
+indexer = Indexer()
+intake = Intake()
+lift = Lift()
+semicircle = Semicircle()
+shooter = Shooter()
+vision = Vision()
+
 class Manticore(wpilib.TimedRobot):
     def robotInit(self):
         """ function that is run at the beginning of the match """
+
+        # # adding functions
+        # dashboard: dashboard.Dashboard
+        # drive: drive.Drive
+        # indexer: indexer.Indexer
+        # intake: intake.Intake
+        # lift: lift.Lift
+        # semicircle: semicircle.Semicircle
+        # shooter: shooter.Shooter
+        # vision: vision.Vision
 
         # setting joysticks and xbox controllers
         leftJoystick = wpilib.Joystick(1)
@@ -69,6 +80,9 @@ class Manticore(wpilib.TimedRobot):
 
         # button to start shooter
         self.shooterLaunch = self.xbox.getRawAxis(3)
+
+        # button to run intake, indexer, and semicircle
+        self.intakeBall = self.xbox.getRawAxis(1)
 
     def autonomousInit(self):
         ''' function that is run at the beginning of the autonomous phase '''
@@ -94,10 +108,18 @@ class Manticore(wpilib.TimedRobot):
         # changing drive train gears
         self.drive.changeGear(self.gearButtonStatus.get())
 
-        if self.shooterLaunch is True
+        if self.shooterLaunch is True:
             self.shooter.initializeShooter(0.5)
         else: 
             self.shooter.initializeShooter(0)
+
+        if self.intakeBall is True:
+                self.intake.takein()
+                self.indexer.forward()
+                self.semicircle.foward()
+        else:
+            pass
+
 
         'Smart Dashboard'
         self.dashboardGearStatus(self.DoubleSolenoidOne.get())

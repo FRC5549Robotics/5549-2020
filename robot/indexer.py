@@ -9,11 +9,13 @@ class Indexer:
         self.flatIndexer = WPI_VictorSRX(7)
         # from front view
         self.verticalIndexerLeft = WPI_TalonSRX(5) 
-        self.verticalIndexerRight = WPI_VictorSPX(12)
+        self.verticalIndexerRight = WPI_VictorSPX(11)
 
     def forward(self):
         # run indexer forward
-        pass
+        self.flatIndexer.set(0.5)
+        self.verticalIndexerLeft.set(0.5)
+        self.verticalIndexerLeft.set(-0.5)
 
     def reverse(self):
         # run indexer reversed
