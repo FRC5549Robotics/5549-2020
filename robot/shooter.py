@@ -3,6 +3,19 @@
 import wpilib
 from ctre import *
 
+
+class Range:
+    differentRangesInWords = []  # contains all the objects that have been created
+
+	def __init__(self, shootingRangeInWords, topRPM, bottomRPM):
+		self.shootingRangeInWords = shootingRangeInWords  # name of the range
+		self.topRPM = topRPM  # speed of top rpm
+		self.bottomRPM = bottomRPM  # speed of bottom rpm
+        
+        # adds the current object to the objects that have been instantiated to "differentRangesInWords"
+        Range.differentRangesInWords.append(self)
+
+
 class Shooter:
     def __init__(self):
         # shooter motors and encoders
@@ -15,32 +28,70 @@ class Shooter:
         self.topMotors = wpilib.SpeedControllerGroup(self.topShooter1Encoder, self.topShooter2)
         self.bottomMotors = wpilib.SpeedControllerGroup(self.bottomShooter1Encoder, self.bottomShooter2)
 
-        # setting shooter rpm
-        # need to move to always check
-        self.topShooterRPM = self.topShooter1Encoder.getQuadraturePosition()    # this is not actually rpm
-        self.bottomShooterRPM = self.bottomShooter1Encoder.getQuadraturePosition()  # this is not actually rpm
+        # different ranges in words
+        shooterFar = Range('far', 0, 0)  # Set top and bottom RPMs
+        shooterMid = Range('mid', 0, 0)  # Set top and bottom RPMs
+        shooterShort = Range('short', 0, 0)  # Set top and bottom RPMs
+    
+	# call this function with the name of the range in words
+	# for example, you can call shootPreDefinedLengths('far')
+	def shootPreDefinedLengths(self, distanceInWords):
+		""" This method will set the rpm of the motors if the range in words matches the input
+		
+		:param distanceInWords:
+		:type distanceInWords: String
 
-    def shootFar(self):
-        # shoot the ball for set far distance
-        self.highrpm = 0 # add later
-        self.initializeShooter(self.highrpm)
+		:return void:
+		"""
 
-    def shootMid(self):
-        # shoot the ball for set medium distance
-        self.midrpm = 0 # add later
-        self.initializeShooter(self.midrpm)
+		# this loop will go through each instance made by the class
+		# and will find which instance's name is equlivalent to the distanceInWords
+		for instance in Range.differentRangesInWords:
+			if instance.shootingRangeInWords == distanceInWords:
+				setTopShooterRpm(instance.topRPM)  # sets the top rpm
+				setBottomShooterRpm(instance.bottomRPM)  # sets the bottom rpm
 
-    def shootShort(self):
-        # shoot the ball for set short distance
-        self.lowrpm = 0 # add later
-        self.initializeShooter(self.lowrpm)
-
-    def shootAuto(self, distance):
+    def shootAutonomous(self, distance):
         # automatically shoot balls given distance
         pass
 
-    def initializeShooter(self, rpm):
-        # initializes shooter and moves piston
-        # only for shooter functions
-        self.topMotors.set(rpm)
-        self.bottomMotors.set(rpm)
+	def convertVelocityToRpm(rawVelocity):
+		""" This method will take in velocity and convert the velocity into rotations per minute
+
+		:param rawVelocity:
+		:type rawVelocity: float
+
+		:return rpm:
+		:rtype rpm: float
+		"""
+		conversionFactor = 600 / 4096
+		rpm = rawVelocity * conversionFactor  # convert velocity to rpm
+		return rpm
+
+	def getTopShooterRpm(self):
+		""" This method will return rpm of the top shooter speed controller group
+
+		:return rpm:
+		:rtype rpm: float
+		"""
+
+		rawVelocity = self.topShooter1Encoder.getSelectedSensorVelocity()  # get velocity
+		rpm = convertVelocityToRpm(rawVelocity)  # convert to rpm
+        return rpm
+
+	def getBottomShooterRpm(self):
+		""" This method will return the rpm of the bottom shooter spped controller group
+
+		:return rpm:
+		:rtype rpm: float
+		"""
+
+        rawVelocity = self.bottomShooter1Encoder.getSelectedSensorVelocity()  # get velocity
+        rpm = convertVelocityToRpm(rawVelocity)  # conver to rpm
+        return rpm
+
+	def setTopShooterRpm(self, rpm):
+		self.topMotor.set(rpm)
+	
+	def setBottomShooterRpm(self, rpm):
+        self.bottomMotor.set(rpm)
