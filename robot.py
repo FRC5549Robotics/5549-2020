@@ -19,45 +19,26 @@ Right Trigger(3): Shoot
 A Button (1): Intake, Indexer, Semicircle
 
 Motor Mapping
-1: driveLeftMotor1
-2: driveLeftMotor2
-3: driveRightMotor1
-4: driveRightMotor2
-5: shooterTopEncoder1
-6: shooterTopMotor2
-7: shooterBottomEncoder1
-8: shooterBottomMotor2
-9: intakeMotor1
-10: indexerMotor1
-11: indexerMotor2
-12: indexerMotor3
-13: indexerMotor4
-14: indexerMotor4
-15: liftMotor1
+1: topShooter1Encoder
+2: topShooter2
+3: bottomShooter1Encoder
+4: bottomShooter2
+5: verticalIndexerLeft
+6: intakeMotor
+7: flatIndexer
+8: 
+9: 
+10: liftMotor
+11: 
+12: 
+13: 
+14: 
+15: 
 """
-
-dashboard = Dashboard(False)
-drive = Drive()
-indexer = Indexer()
-intake = Intake()
-lift = Lift()
-semicircle = Semicircle()
-shooter = Shooter()
-vision = Vision()
 
 class Manticore(wpilib.TimedRobot):
     def robotInit(self):
         """ function that is run at the beginning of the match """
-
-        # # adding functions
-        # dashboard: dashboard.Dashboard
-        # drive: drive.Drive
-        # indexer: indexer.Indexer
-        # intake: intake.Intake
-        # lift: lift.Lift
-        # semicircle: semicircle.Semicircle
-        # shooter: shooter.Shooter
-        # vision: vision.Vision
 
         # setting joysticks and xbox controllers
         leftJoystick = wpilib.Joystick(1)

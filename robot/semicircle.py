@@ -16,4 +16,5 @@ class Semicircle:
 
     def reverse(self):
         # run indexer reversed
-        pass
+        # self.lexanParallelMotor.set(-0.5)
+        self.semicircleMotor.set(-0.5)
