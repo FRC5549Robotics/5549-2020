@@ -19,4 +19,6 @@ class Indexer:
 
     def reverse(self):
         # run indexer reversed
-        pass
+        self.flatIndexer.set(-0.5)
+        self.verticalIndexerLeft.set(-0.5)
+        self.verticalIndexerLeft.set(0.5)
