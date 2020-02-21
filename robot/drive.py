@@ -4,6 +4,7 @@ import wpilib
 from ctre import *
 import wpilib.drive
 
+
 class Drive:
     def __init__(self):
         # drive train motors
@@ -38,10 +39,8 @@ class Drive:
 
     def tankDrive(self, leftJoystickAxis, rightJoystickAxis):
         # tank drive at set scaling
-        scaling = 0.65
-        self.drive.tankDrive(leftJoystickAxis * scaling, rightJoystickAxis * scaling)
+        self.drive.tankDrive(leftJoystickAxis, rightJoystickAxis)
 
     def arcadeDrive(self, leftJoystick, rotateAxis):
         # arcade drive at set scaling
-        scaling = 0.65
-        self.drive.arcadeDrive(leftJoystick * scaling, rotateAxis * scaling)
+        self.drive.arcadeDrive(leftJoystick, rotateAxis)

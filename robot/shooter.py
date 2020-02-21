@@ -3,6 +3,7 @@
 import wpilib
 from ctre import *
 
+
 class Shooter:
     def __init__(self):
         # shooter motors and encoders
@@ -17,8 +18,8 @@ class Shooter:
 
         # setting shooter rpm
         # need to move to always check
-        self.topShooterRPM = self.topShooter1Encoder.getQuadraturePosition()    # this is not actually rpm
-        self.bottomShooterRPM = self.bottomShooter1Encoder.getQuadraturePosition()  # this is not actually rpm
+        self.topShooterRPM = self.topShooter1Encoder.getSelectedSensorVelocity()    # this is not actually rpm
+        self.bottomShooterRPM = self.bottomShooter1Encoder.getSelectedSensorVelocity()  # this is not actually rpm
 
     def shootFar(self):
         # shoot the ball for set far distance
@@ -32,7 +33,7 @@ class Shooter:
 
     def shootShort(self):
         # shoot the ball for set short distance
-        self.lowrpm = 0 # add later
+        self.lowrpm = 0     # add later
         self.initializeShooter(self.lowrpm)
 
     def shootAuto(self, distance):
