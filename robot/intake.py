@@ -3,6 +3,7 @@
 import wpilib
 from ctre import *
 
+
 class Intake:
     def __init__(self):
         # intake motor

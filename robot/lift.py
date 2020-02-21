@@ -3,6 +3,7 @@
 import wpilib
 from ctre import *
 
+
 class Lift:
     def __init__(self):
         # lift motor

@@ -3,6 +3,7 @@
 import wpilib
 from ctre import *
 
+
 class Semicircle:
     def __init__(self):
         # semicircle motors

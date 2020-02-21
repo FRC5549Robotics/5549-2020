@@ -1,14 +1,17 @@
 """ dashboard functions """
 # importing packages
 from networktables import NetworkTables
+import logging
 
 class Dashboard:
-    def __init__(self, isTest: bool):
+    def __init__(self):
+        # logging
+        logging.basicConfig(level=logging.DEBUG)
         # getting shuffleboard
-        self.dashboard = NetworkTables.getTable('SmartDashboard')
+        self.dashboard = NetworkTables.getTable("SmartDashboard")
 
         # initializing dashboard    
-        self.dashboard.initialize(server='10.55.49.2')
+        NetworkTables.initialize(server='10.55.49.2')
 
     def dashboardGearStatus(self, solenoidValue):
         # display high/low gear to dashboard

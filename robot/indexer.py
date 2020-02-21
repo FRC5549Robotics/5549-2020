@@ -3,6 +3,7 @@
 import wpilib
 from ctre import *
 
+
 class Indexer:
     def __init__(self):
         # indexer motors
