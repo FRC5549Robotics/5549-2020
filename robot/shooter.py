@@ -67,16 +67,9 @@ class Shooter:
         :return void:
         """
 
-        # access the two stored ints in the list of ranges
-        storedDataForIndexNumber = self.rangesForShooting[listIndexNumber]
-
-        # extract the top and bottom rpm ints from the stored data
-        topRpm = storedDataForIndexNumber[1]
-        bottomRpm = storedDataForIndexNumber[2]
-
         # set the shooter rpms to the extracted values
-        self.setTopShooterRpm(topRpm)
-        self.setBottomShooterRpm(bottomRpm)
+        self.setTopShooterRpm(self.rangesForShooting[listIndexNumber][1])
+        self.setBottomShooterRpm(self.rangesForShooting[listIndexNumber][2])
 
     def shootAutonomous(self, distance):
         # automatically shoot balls given distance
