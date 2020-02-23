@@ -9,12 +9,8 @@ class Lift:
         # lift motor
         self.liftMotor = WPI_VictorSPX(10)
 
-    def dropDown(self):
-        # drops the lift to down position
-        pass
-
-    def liftUp(self):
-        # moves the lift to up position
+    def changeLift(self, liftButtonStatus):
+        # changes the position of the lift
         pass
 
     def runMotor(self, power):

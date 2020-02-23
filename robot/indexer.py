@@ -6,11 +6,15 @@ from ctre import *
 
 class Indexer:
     def __init__(self):
-        # indexer motors
-        self.flatIndexer = WPI_TalonSRX(7)
-        # from front view
-        self.verticalIndexerLeft = WPI_TalonSRX(5) 
-        self.verticalIndexerRight = WPI_VictorSPX(11)
+        # vertical indexer motors
+        self.verticalIndexerRight = WPI_TalonSRX(9)
+        self.verticalIndexerLeft = WPI_VictorSPX(10)
+
+        # flat indexer motor
+        self.flatIndexer = WPI_TalonSRX(12)
+
+        # inverts indexer motors
+        self.flatIndexer.setInverted(True)
 
     def forward(self):
         # run indexer forward

@@ -6,20 +6,24 @@ from ctre import *
 
 class Shooter:
     def __init__(self):
-        # shooter motors and encoders
-        self.topShooter1Encoder = WPI_TalonSRX(1)
-        self.topShooter2 = WPI_VictorSPX(2)
-        self.bottomShooter1Encoder = WPI_TalonSRX(3)
-        self.bottomShooter2 = WPI_VictorSPX(4)
+        # shooter motors
+        self.topShooterEncoder = WPI_TalonSRX(5)
+        self.topShooterMotor = WPI_VictorSPX(6)
+        self.bottomShooterEncoder = WPI_TalonSRX(7)
+        self.bottomShooterMotor = WPI_VictorSPX(8)
+
+        # inverses shooter motors
+        self.topShooterEncoder.setInverted(True)
+        self.bottomShooterEncoder.setInverted(True)
 
         # shooter motor groups
-        self.topMotors = wpilib.SpeedControllerGroup(self.topShooter1Encoder, self.topShooter2)
-        self.bottomMotors = wpilib.SpeedControllerGroup(self.bottomShooter1Encoder, self.bottomShooter2)
+        self.topMotors = wpilib.SpeedControllerGroup(self.topShooterEncoder, self.topShooterMotor)
+        self.bottomMotors = wpilib.SpeedControllerGroup(self.bottomShooterEncoder, self.bottomShooterMotor)
 
         # setting shooter rpm
         # need to move to always check
-        self.topShooterRPM = self.topShooter1Encoder.getSelectedSensorVelocity()    # this is not actually rpm
-        self.bottomShooterRPM = self.bottomShooter1Encoder.getSelectedSensorVelocity()  # this is not actually rpm
+        self.topShooterRPM = self.topShooterEncoder.getSelectedSensorVelocity()    # this is not actually rpm
+        self.bottomShooterRPM = self.topShooterMotor.getSelectedSensorVelocity()  # this is not actually rpm
 
     def shootFar(self):
         # shoot the ball for set far distance

@@ -7,8 +7,10 @@ from ctre import *
 class Semicircle:
     def __init__(self):
         # semicircle motors
-        # self.lexanParallelMotor = WPI_Victor(9)
-        self.semicircleMotor = WPI_VictorSPX(11)
+        self.semicircleMotor = WPI_VictorSPX(14)
+
+        # reverse semicircle motor
+        self.semicircleMotor.setInverted(True)
 
     def forward(self):
         # run indexer forward
