@@ -54,8 +54,10 @@ class Manticore(wpilib.TimedRobot):
         # button for gear shifting
         self.gearButtonStatus = Toggle(self.rightJoystick, 1)
 
-        # button for lift
-        self.liftButtonStatus = Toggle(self.xbox, 4)
+        # buttons for lift
+        # self.liftRunButton = self.xbox.getRawButton(4)
+        # self.liftRunButton = self.xbox.getRawAxis(3)
+        self.liftButtonStatus = Toggle(self.xbox, 8)
 
         # button to start shooter
         self.shooterLaunch = self.xbox.getRawAxis(3)
@@ -99,6 +101,9 @@ class Manticore(wpilib.TimedRobot):
         # self.dashboard.dashboardGearStatus(self.drive.getGearSolenoid())
 
         """ Lift """
+        # run lift
+        self.lift.runMotor(self.xbox.getRawButton(4))
+
         # changing lift state
         self.lift.changeLift(self.liftButtonStatus.get())
 
@@ -109,21 +114,21 @@ class Manticore(wpilib.TimedRobot):
         # self.dashboard.dashboardCompressorStatus(self.compressor.enabled())
 
         """ Shooter """
+        self.shooter.initializeShooter(self.xbox.getRawAxis(3))
 
-        """ Intake """
-
-        # if self.shooterLaunch is True:
-        #     Shooter.initializeShooter(0.5)
-        # else:
-        #     Shooter.initializeShooter(0)
-        #
-        # if self.intakeBall is True:
-        #         Intake.takein()
-        #         Indexer.forward()
-        #         Semicircle.forward()
-        # else:
-        #     pass
-
+        """ Intake and Indexer"""
+        # runs intake, indeexer, semicircle if left trigger is pressed or indexer, semicircle if 'b' is pressed
+        if self.xbox.getRawAxis(2) != 0:
+            self.intake.takeIn(True)
+            self.indexer.forward(True)
+            self.semicircle.forward(True)
+        elif self.xbox.getRawButton(2) is True:
+            self.indexer.forward(True)
+            self.semicircle.forward(True)
+        else:
+            self.intake.takeIn(False)
+            self.indexer.forward(False)
+            self.semicircle.forward(False)
 
         # self.dashboardGearStatus(self.DoubleSolenoidOne.get())
 
