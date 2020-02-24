@@ -117,18 +117,26 @@ class Manticore(wpilib.TimedRobot):
         self.shooter.initializeShooter(self.xbox.getRawAxis(3))
 
         """ Intake and Indexer"""
-        # runs intake, indeexer, semicircle if left trigger is pressed or indexer, semicircle if 'b' is pressed
-        if self.xbox.getRawAxis(2) != 0:
-            self.intake.takeIn(True)
-            self.indexer.forward(True)
-            self.semicircle.forward(True)
+        # use 'forward', 'reverse', 'stop'
+        if self.xbox.getPOV() == 0:
+            self.intake.run('Forward')
+            self.indexer.run('Forward')
+            self.semicircle.run('Forward')
+
+        elif self.xbox.getPOV() == 180:
+            self.intake.run('Reverse')
+            self.indexer.run('Stop')
+            self.semicircle.run('Reverse')
+
         elif self.xbox.getRawButton(2) is True:
-            self.indexer.forward(True)
-            self.semicircle.forward(True)
+            self.intake.run('Stop')
+            self.indexer.run('Forward')
+            self.semicircle.run('Forward')
+
         else:
-            self.intake.takeIn(False)
-            self.indexer.forward(False)
-            self.semicircle.forward(False)
+            self.intake.run('Stop')
+            self.indexer.run('Stop')
+            self.semicircle.run('Stop')
 
         # self.dashboardGearStatus(self.DoubleSolenoidOne.get())
 

@@ -79,6 +79,10 @@ class Shooter:
         # automatically shoot balls given distance
         pass
 
+    def initializeShooter(self, shoot):
+        # automatically shoot balls given distance
+        pass
+
     @staticmethod
     def convertVelocityToRpm(rawVelocity):
         """ This method will take in velocity and convert the velocity into rotations per minute

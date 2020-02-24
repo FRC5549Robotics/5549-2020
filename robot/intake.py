@@ -12,15 +12,12 @@ class Intake:
         # reverse intake motor
         self.intakeMotor.setInverted(True)
 
-    def takeIn(self, run):
-        # taking in the ball at set scaling
-        speed = 0.50
-        if run is True:
+    def run(self, state):
+        # run indexer forward
+        speed = 0.5
+        if state == 'Forward':
             self.intakeMotor.set(speed)
-        elif run is False:
+        elif state == 'Reverse':
+            self.intakeMotor.set(-speed)
+        elif state == 'Stop':
             self.intakeMotor.set(0)
-
-    def eject(self):
-        # ejecting ball at set scaling
-        scaling = 0.50
-        self.intakeMotor.set(-scaling)

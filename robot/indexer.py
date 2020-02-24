@@ -19,17 +19,12 @@ class Indexer:
         # creates indexer motor group
         self.indexer = wpilib.SpeedControllerGroup(self.verticalIndexerLeft, self.verticalIndexerRight, self.flatIndexer)
 
-
-    def forward(self, run):
+    def run(self, state):
         # run indexer forward
         speed = 0.5
-        if run is True:
+        if state == 'Forward':
             self.indexer.set(speed)
-        elif run is False:
+        elif state == 'Reverse':
+            self.indexer.set(-speed)
+        elif state == 'Stop':
             self.indexer.set(0)
-
-    def reverse(self):
-        # run indexer reversed
-        self.flatIndexer.set(-0.5)
-        self.verticalIndexerLeft.set(-0.5)
-        self.verticalIndexerLeft.set(0.5)
