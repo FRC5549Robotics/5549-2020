@@ -1,69 +1,138 @@
 """
-Infinite Recharge - Scorpio from FRC 5549: Gryphon Robotics
+Infinite Recharge - Manticore from FRC 5549: Gryphon Robotics
 """
 # import packages
 import wpilib
 from ctre import *
+from robot import *
+from networktables import NetworkTables
 from robotpy_ext.control.toggle import Toggle
 from wpilib.drive import DifferentialDrive
 
+"""
+Motor Mapping
+1 (Victor SPX - Positive): frontLeftMotor
+2 (Victor SPX - Negative): frontRightMotor
+3 (Talon SRX - Negative): rearRightEncoder
+4 (Talon SRX - Positive): rearLeftEncoder
+5 (Talon SRX - Negative): topShooterEncoder
+6 (Victor SPX - Positive): topShooterMotor
+7 (Talon SRX - Negative): bottomShooterEncoder
+8 (Victor SPX - Positive): bottomShooterMotor
+9 (Talon SRX - Positive): verticalIndexerRight
+10 (Victor SPX - Positive): verticalIndexerLeft
+11 (Talon SRX - Positive): intakeMotor
+12 (Talon SRX - Negative): flatIndexer
+13 (Victor SPX): liftMotor
+14 (Talon SRX - Negative): semiCircleMotor
+20 (Victor SPX): extraMotorController
+"""
 
-class MyRobot(wpilib.TimedRobot):
+
+class Manticore(wpilib.TimedRobot):
     def robotInit(self):
-        """ function that is run at the beginning of the match """
+        # adding functions
+        self.dashboard = Dashboard()
+        self.drive = Drive()
+        self.indexer = Indexer()
+        self.intake = Intake()
+        self.lift = Lift()
+        self.semicircle = Semicircle()
+        self.shooter = Shooter()
+        self.vision = Vision()
 
+        """ Joystick """
         # setting joysticks and xbox controllers
         self.leftJoystick = wpilib.Joystick(0)
         self.rightJoystick = wpilib.Joystick(1)
         self.xbox = wpilib.Joystick(2)
 
-        # drive train motors
-        self.leftMotor1 = WPI_VictorSPX(12)
-        self.leftMotor2 = WPI_TalonSRX(13)
-        self.rightMotor1 = WPI_VictorSPX(14)
-        self.rightMotor2 = WPI_TalonSRX(15)
+        """ Button Status and Toggles """
+        # button for switching between arcade and tank drive
+        self.driveButtonStatus = Toggle(self.rightJoystick, 2)
 
-        # drive train motor groups
-        self.leftDrive = wpilib.SpeedControllerGroup(self.leftMotor1, self.leftMotor2)
-        self.rightDrive = wpilib.SpeedControllerGroup(self.rightMotor1, self.rightMotor2)
+        # button for gear shifting
+        self.gearButtonStatus = Toggle(self.rightJoystick, 1)
 
-        # setting up differential drive
-        self.drive = DifferentialDrive(self.leftDrive, self.rightDrive)
+        # buttons for lift
+        # self.liftRunButton = self.xbox.getRawButton(4)
+        # self.liftRunButton = self.xbox.getRawAxis(3)
+        self.liftButtonStatus = Toggle(self.xbox, 8)
 
-        self.topShooter1 = WPI_VictorSPX(1)
-        self.topShooterEncoder = WPI_TalonSRX(2)
-        self.bottomShooterEncoder = WPI_TalonSRX(3)
-        self.bottomShooter1 = WPI_VictorSPX(4)
+        # button to start shooter
+        self.shooterLaunch = self.xbox.getRawAxis(3)
 
-        self.topShooters = wpilib.SpeedControllerGroup(self.topShooter1, self.topShooterEncoder)
-        self.bottomShooters = wpilib.SpeedControllerGroup(self.bottomShooter1, self.bottomShooterEncoder)
+        # button to run intake, indexer, and semicircle
+        self.intakeBall = self.xbox.getRawAxis(1)
+
+        """ Pneumatics """
+        # pneumatic compressor
+        self.compressor = wpilib.Compressor(0)
+        self.compressor.setClosedLoopControl(True)
+        self.compressor.start()
 
     def autonomousInit(self):
-        ''' function that is run at the beginning of the autonomous phase '''
         pass
 
     def autonomousPeriodic(self):
-        ''' function that is run periodically during the autonomous phase '''
         pass
 
     def teleopInit(self):
-        ''' function that is run at the beginning of the tele-operated phase '''
         pass
 
     def teleopPeriodic(self):
-        ''' function that is run periodically during the tele-operated phase '''
 
+        """ Drive """
         # get joystick values
         self.driveLeft = self.leftJoystick.getRawAxis(1)
         self.driveRight = self.rightJoystick.getRawAxis(1)
+        self.driveRotate = self.rightJoystick.getRawAxis(2)
 
-        self.drive.tankDrive(self.driveLeft, self.driveRight)
+        # changing between arcade and tank drive
+        if self.driveButtonStatus.on is True:
+            self.drive.tankDrive(self.driveLeft, self.driveRight)
+        elif self.driveButtonStatus.on is False:
+            self.drive.arcadeDrive(self.driveRight, self.driveRotate)
 
-        self.leftDrive.set(0.5)
-        self.rightDrive.set(0.5)
-        self.topShooters.set(0.5)
-        self.bottomShooters.set(-0.5)
+        # changing drive train gears
+        self.drive.changeGear(self.gearButtonStatus.get())
+
+        # sending drive train gear status to dashboard
+        # self.dashboard.dashboardGearStatus(self.drive.getGearSolenoid())
+
+        """ Lift """
+        # run lift
+        self.lift.runMotor(self.xbox.getRawButton(4))
+
+        # changing lift state
+        self.lift.changeLift(self.liftButtonStatus.get())
+
+        # sending lift state status to dashboard
+        # self.dashboard.dashboardLiftStatus(self.drive.getLiftSolenoid())
+
+        """ Compressor """
+        # self.dashboard.dashboardCompressorStatus(self.compressor.enabled())
+
+        """ Shooter """
+        self.shooter.initializeShooter(self.xbox.getRawAxis(3))
+
+        """ Intake and Indexer"""
+        # runs intake, indeexer, semicircle if left trigger is pressed or indexer, semicircle if 'b' is pressed
+        if self.xbox.getRawAxis(2) != 0:
+            self.intake.takeIn(True)
+            self.indexer.forward(True)
+            self.semicircle.forward(True)
+        elif self.xbox.getRawButton(2) is True:
+            self.indexer.forward(True)
+            self.semicircle.forward(True)
+        else:
+            self.intake.takeIn(False)
+            self.indexer.forward(False)
+            self.semicircle.forward(False)
+
+        # self.dashboardGearStatus(self.DoubleSolenoidOne.get())
+
 
 if __name__ == '__main__':
     ''' running the entire robot program '''
-    wpilib.run(MyRobot)
+    wpilib.run(Manticore)
