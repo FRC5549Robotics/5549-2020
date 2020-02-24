@@ -30,33 +30,29 @@ class Shooter:
             [30, 15]
         ]
 
-    def getTopShooterRpm(self):
-        """ This method will return rpm of the top shooter speed controller group
+    def getShooterRpm(self, motors):
+        """ This method will get velocity return rpm of the top or bottom shooter speed controller group
 
         :return rpm:
         :rtype rpm: float
         """
-
-        rawTopEncoderVelocity = self.topShooter1Encoder.getSelectedSensorVelocity()  # get velocity
-        rpm = Shooter.convertVelocityToRpm(rawTopEncoderVelocity)  # convert to rpm
-        return rpm
-
-    def getBottomShooterRpm(self):
-        """ This method will return the rpm of the bottom shooter speed controller group
-
-        :return rpm:
-        :rtype rpm: float
-        """
-
-        rawBottomEncoderVelocity = self.bottomShooter1Encoder.getSelectedSensorVelocity()  # get velocity
-        rpm = Shooter.convertVelocityToRpm(rawBottomEncoderVelocity)  # convert to rpm
-        return rpm
-
-    def setTopShooterRpm(self, rpm):
+        if motors = 'Top':
+            topEncoderVelocity = self.topShooter1Encoder.getSelectedSensorVelocity()
+            topRPM = Shooter.convertVelocityToRpm(topEncoderVelocity)
+            return topRPM
+        elif motors = 'Bottom':
+            bottomEncoderVelocity = self.bottomShooter2Encoder.getSelectedSensorVelocity() 
+            bottomRPM = Shooter.convertVelocityToRpm(BbttomEncoderVelocity)
+            return bottomRPM
+        
+    def setTopShooterRpm(self, motors, rpm, run):
+    if motors = 'Top' and Run is True:
         self.topMotors.set(rpm)
-
-    def setBottomShooterRpm(self, rpm):
+    elif motors = 'Bottom' and Run is True:
         self.bottomMotors.set(rpm)
+    else:
+        self.topMotors.set(0)
+        self.bottomMotors.set(0)
 
     # call this function with the name of the range in words
     # for example, you can call shootPreDefinedLengths('far')
@@ -80,7 +76,7 @@ class Shooter:
         pass
 
     def initializeShooter(self, shoot):
-        # automatically shoot balls given distance
+        # start up shooter motors before shooting
         pass
 
     def PIDShooter(self):
@@ -91,11 +87,11 @@ class Shooter:
         self.PIDShooter = wpilib.PIDController(self, kp, kI, kD, kF, self.encoder, output=self)
 
     @staticmethod
-    def convertVelocityToRpm(rawVelocity):
+    def convertVelocityToRpm(velocity):
         """ This method will take in velocity and convert the velocity into rotations per minute
 
-        :param rawVelocity:
-        :type rawVelocity: float
+        :param velocity:
+        :type velocity: float
 
         :return rpm:
         :rtype rpm: float
@@ -103,5 +99,5 @@ class Shooter:
 
         # convert velocity to rpm
         conversionFactor = 600 / 4096
-        rpm = rawVelocity * conversionFactor
+        rpm = velocity * conversionFactor
         return rpm

@@ -31,7 +31,7 @@ Motor Mapping
 
 
 class Manticore(wpilib.TimedRobot):
-    def robotInit(self):Reverse
+    def robotInit(self):
         # adding functions
         self.dashboard = Dashboard()
         self.drive = Drive()
