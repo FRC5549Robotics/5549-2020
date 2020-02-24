@@ -55,3 +55,10 @@ class Drive:
         scaling = 0.5
         # self.drive.arcadeDrive(rightJoystickAxis * scaling, rotateAxis, True)
         self.drive.arcadeDrive(rotateAxis, -rightJoystickAxis * scaling, True)
+
+    def PIDNavX(self):
+        kP = 0.00
+        kI = 0.00
+        kD = 0.00
+        kf = 0.00
+        self.PIDNavXs = wpilib.PIDController(self, kp, kI, kD, kF, self.encoder, output=self)

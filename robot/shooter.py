@@ -83,6 +83,13 @@ class Shooter:
         # automatically shoot balls given distance
         pass
 
+    def PIDShooter(self):
+        kP = 0.00
+        kI = 0.00
+        kD = 0.00
+        kf = 0.00
+        self.PIDShooter = wpilib.PIDController(self, kp, kI, kD, kF, self.encoder, output=self)
+
     @staticmethod
     def convertVelocityToRpm(rawVelocity):
         """ This method will take in velocity and convert the velocity into rotations per minute
