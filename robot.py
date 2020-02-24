@@ -8,6 +8,7 @@ from robot import *
 from networktables import NetworkTables
 from robotpy_ext.control.toggle import Toggle
 from wpilib.drive import DifferentialDrive
+import navx
 
 """
 Motor Mapping
@@ -30,7 +31,7 @@ Motor Mapping
 
 
 class Manticore(wpilib.TimedRobot):
-    def robotInit(self):
+    def robotInit(self):Reverse
         # adding functions
         self.dashboard = Dashboard()
         self.drive = Drive()
@@ -55,8 +56,6 @@ class Manticore(wpilib.TimedRobot):
         self.gearButtonStatus = Toggle(self.rightJoystick, 1)
 
         # buttons for lift
-        # self.liftRunButton = self.xbox.getRawButton(4)
-        # self.liftRunButton = self.xbox.getRawAxis(3)
         self.liftButtonStatus = Toggle(self.xbox, 8)
 
         # button to start shooter
@@ -70,6 +69,10 @@ class Manticore(wpilib.TimedRobot):
         self.compressor = wpilib.Compressor(0)
         self.compressor.setClosedLoopControl(True)
         self.compressor.start()
+
+        "NavX"
+        self.ahrs = wpilib.navx.ahrs.create_spi()
+        self.ahrs.reset()
 
     def autonomousInit(self):
         pass
@@ -91,8 +94,11 @@ class Manticore(wpilib.TimedRobot):
         # changing between arcade and tank drive
         if self.driveButtonStatus.on is True:
             self.drive.tankDrive(self.driveLeft, self.driveRight)
+            self.dashboard.driveStatus('Tank Drive')
         elif self.driveButtonStatus.on is False:
             self.drive.arcadeDrive(self.driveRight, self.driveRotate)
+            self.dashboard.driveStatus('Arcade Drive')
+
 
         # changing drive train gears
         self.drive.changeGear(self.gearButtonStatus.get())
@@ -108,6 +114,7 @@ class Manticore(wpilib.TimedRobot):
         self.lift.changeLift(self.liftButtonStatus.get())
 
         # sending lift state status to dashboard
+        # self.dashboard.dashboardGearStatus(self.drive.getGearSolenoid())
         # self.dashboard.dashboardLiftStatus(self.drive.getLiftSolenoid())
 
         """ Compressor """
@@ -119,14 +126,14 @@ class Manticore(wpilib.TimedRobot):
         """ Intake and Indexer"""
         # use 'forward', 'reverse', 'stop'
         if self.xbox.getPOV() == 0:
+            self.intake.run('Reverse')
+            self.indexer.run('Stop')
+            self.semicircle.run('Stop')
+
+        elif self.xbox.getPOV() == 180:
             self.intake.run('Forward')
             self.indexer.run('Forward')
             self.semicircle.run('Forward')
-
-        elif self.xbox.getPOV() == 180:
-            self.intake.run('Reverse')
-            self.indexer.run('Stop')
-            self.semicircle.run('Reverse')
 
         elif self.xbox.getRawButton(2) is True:
             self.intake.run('Stop')
@@ -138,6 +145,7 @@ class Manticore(wpilib.TimedRobot):
             self.indexer.run('Stop')
             self.semicircle.run('Stop')
 
+        """ Auto Aim """
         # self.dashboardGearStatus(self.DoubleSolenoidOne.get())
 
 
