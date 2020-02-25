@@ -3,6 +3,7 @@ Infinite Recharge - Manticore from FRC 5549: Gryphon Robotics
 """
 # import packages
 import wpilib
+import navx
 from ctre import *
 from robot import *
 from networktables import NetworkTables
@@ -55,8 +56,11 @@ class Manticore(wpilib.TimedRobot):
         # button for gear shifting
         self.gearButtonStatus = Toggle(self.rightJoystick, 1)
 
-        # buttons for lift
+        # button for lift
         self.liftButtonStatus = Toggle(self.xbox, 8)
+
+        # button for auto turn
+        self.turnButtonStatus = Toggle(self.xbox, 10)   # this button status is a test for now
 
         # button to start shooter
         self.shooterLaunch = self.xbox.getRawAxis(3)
@@ -70,9 +74,6 @@ class Manticore(wpilib.TimedRobot):
         self.compressor.setClosedLoopControl(True)
         self.compressor.start()
 
-        "NavX"
-        self.ahrs = wpilib.navx.ahrs.create_spi()
-        self.ahrs.reset()
 
     def autonomousInit(self):
         pass
@@ -94,17 +95,18 @@ class Manticore(wpilib.TimedRobot):
         # changing between arcade and tank drive
         if self.driveButtonStatus.on is True:
             self.drive.tankDrive(self.driveLeft, self.driveRight)
+            # sending drive train driving mode to dashboard
             self.dashboard.driveStatus('Tank Drive')
+
         elif self.driveButtonStatus.on is False:
             self.drive.arcadeDrive(self.driveRight, self.driveRotate)
+            # sending drive train driving mode to dashboard
             self.dashboard.driveStatus('Arcade Drive')
-
 
         # changing drive train gears
         self.drive.changeGear(self.gearButtonStatus.get())
-
         # sending drive train gear status to dashboard
-        # self.dashboard.dashboardGearStatus(self.drive.getGearSolenoid())
+        self.dashboard.dashboardGearStatus(self.drive.getGearSolenoid())
 
         """ Lift """
         # run lift
@@ -116,6 +118,9 @@ class Manticore(wpilib.TimedRobot):
         # sending lift state status to dashboard
         # self.dashboard.dashboardGearStatus(self.drive.getGearSolenoid())
         # self.dashboard.dashboardLiftStatus(self.drive.getLiftSolenoid())
+
+        """ Auto Turn w/ NavX """
+        self.drive.turnToAngle(self.turnButtonStatus.get(), angle=90)
 
         """ Compressor """
         # self.dashboard.dashboardCompressorStatus(self.compressor.enabled())
@@ -146,7 +151,8 @@ class Manticore(wpilib.TimedRobot):
             self.semicircle.run('Stop')
 
         """ Auto Aim """
-        # self.dashboardGearStatus(self.DoubleSolenoidOne.get())
+
+
 
 
 if __name__ == '__main__':

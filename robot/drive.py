@@ -1,12 +1,14 @@
 """ Drive Functions """
 # importing packages
 import wpilib
+import navx
 from ctre import *
 from wpilib.drive import DifferentialDrive
 
 
 class Drive:
     def __init__(self):
+        """ Drive """
         # drive train motors
         self.frontLeftMotor = WPI_VictorSPX(1)
         self.frontRightMotor = WPI_VictorSPX(2)
@@ -24,26 +26,52 @@ class Drive:
         # setting up differential drive
         self.drive = DifferentialDrive(self.leftDrive, self.rightDrive)
 
+        """ Pneumatics """
         # drive pneumatics
-        # self.gearSolenoid = wpilib.DoubleSolenoid(2, 3)    # check these numbers
+        self.gearSolenoid = wpilib.DoubleSolenoid(2, 3)    # check these numbers
+
+        """ NavX """
+        self.navx = navx.ahrs.AHRS.create_spi()
+        self.navx.reset()
+
+        """ PID """
+        # pid constants
+        kP = 0.00
+        kI = 0.00
+        kD = 0.00
+        kF = 0.00
+
+        # pid controller
+        self.PIDNavX = wpilib.PIDController(kP, kI, kD, kF, self.navx, output=self)
+        self.PIDNavX.setInputRange(0, 180)   # navx input - this says navx can go from 0 to 180 degrees
+                                            # adjust as needed
+        self.PIDNavX.setOutputRange(-0.5, 0.5)  # adjusting power for now. check values and type
+        self.PIDNavX.setAbsoluteTolerance(1.0)  # setting the max it can miss by - 1 degrees
+        self.PIDNavX.setContinuous(True)    # check to see if we need this
+
+    def pidWrite(self, output):
+        self.turnRate = output
 
     def getGearSolenoid(self):
         return self.gearSolenoid.get()
 
-    def turnToAngle(self, angle):
+    def turnToAngle(self, turnButtonStatus, angle):
         # turn robot to specified angle values using navx
-        pass
+        if turnButtonStatus is True:
+            self.PIDNavX.setSetpoint(angle)
+            self.doTurn = True
+        elif turnButtonStatus is False:
+            self.PIDNavX.setSetpoint(0)
+            self.doTurn = False
 
     def changeGear(self, buttonStatus):
         # switches gear mode
         if buttonStatus is True:
             # high gear
-            # self.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
-            pass
+            self.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
         elif buttonStatus is False:
             # low gear
-            # self.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
-            pass
+            self.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
 
     def tankDrive(self, leftJoystickAxis, rightJoystickAxis):
         # tank drive at set scaling
@@ -55,9 +83,3 @@ class Drive:
         scaling = 0.5
         self.drive.arcadeDrive(rotateAxis, -rightJoystickAxis * scaling, True)
 
-    def PIDNavX(self):
-        kP = 0.00
-        kI = 0.00
-        kD = 0.00
-        kf = 0.00
-        self.PIDNavXs = wpilib.PIDController(self, kp, kI, kD, kF, self.encoder, output=self)
