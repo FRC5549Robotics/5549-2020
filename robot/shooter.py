@@ -14,7 +14,7 @@ class Shooter:
         self.bottomShooterMotor = WPI_VictorSPX(8)
 
         # inverses shooter motors
-        self.topShooterEncoder.setInverted(True)
+        # self.topShooterEncoder.setInverted(True)
         self.bottomShooterEncoder.setInverted(True)
 
         # shooter motor groups
@@ -36,23 +36,26 @@ class Shooter:
         :return rpm:
         :rtype rpm: float
         """
-        if motors = 'Top':
+        if motors == 'Top':
             topEncoderVelocity = self.topShooter1Encoder.getSelectedSensorVelocity()
             topRPM = Shooter.convertVelocityToRpm(topEncoderVelocity)
             return topRPM
-        elif motors = 'Bottom':
+        elif motors == 'Bottom':
             bottomEncoderVelocity = self.bottomShooter2Encoder.getSelectedSensorVelocity() 
-            bottomRPM = Shooter.convertVelocityToRpm(BbttomEncoderVelocity)
+            bottomRPM = Shooter.convertVelocityToRpm(BottomEncoderVelocity)
             return bottomRPM
         
-    def setTopShooterRpm(self, motors, rpm, run):
-    if motors = 'Top' and Run is True:
-        self.topMotors.set(rpm)
-    elif motors = 'Bottom' and Run is True:
-        self.bottomMotors.set(rpm)
-    else:
-        self.topMotors.set(0)
-        self.bottomMotors.set(0)
+    def setShooterRpm(self, motors, rpm):
+        if motors == 'Top':
+            self.topMotors.set(rpm)
+        elif motors == 'Bottom':
+            self.bottomMotors.set(rpm)
+        elif motors == 'Both':
+            self.topMotors.set(rpm)
+            self.bottomMotors.set(rpm)
+        else:
+            self.topMotors.stopMotor()
+            self.bottomMotors.stopMotor()
 
     # call this function with the name of the range in words
     # for example, you can call shootPreDefinedLengths('far')

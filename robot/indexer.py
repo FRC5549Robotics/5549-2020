@@ -27,4 +27,4 @@ class Indexer:
         elif state == 'Reverse':
             self.indexer.set(-speed)
         elif state == 'Stop':
-            self.indexer.set(0)
+            self.indexer.stopMotor()

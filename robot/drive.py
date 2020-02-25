@@ -53,7 +53,6 @@ class Drive:
     def arcadeDrive(self, rightJoystickAxis, rotateAxis):
         # arcade drive at set scaling
         scaling = 0.5
-        # self.drive.arcadeDrive(rightJoystickAxis * scaling, rotateAxis, True)
         self.drive.arcadeDrive(rotateAxis, -rightJoystickAxis * scaling, True)
 
     def PIDNavX(self):

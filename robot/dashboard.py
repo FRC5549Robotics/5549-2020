@@ -20,9 +20,15 @@ class Dashboard:
         elif solenoidValue == 2:
             self.dashboard.putString("Gear Status", "Low")
 
-    def driveStatus (self, driveButton):
+    def driveStatus(self, driveButton):
         # display drive type to dashboard
         if driveButton == 'Tank Drive':
             self.dashboard.putString("Drive Status", "Tank Drive")
         elif driveButton == 'Arcade Drive':
             self.dashboard.putString("Drive Status", "Arcade Drive")
+
+    def PID(self):
+        self.kP = self.dashboard.getNumber('kP', 0)
+        self.kI = self.dashboard.getNumber('kI', 0)
+        self.kD = self.dashboard.getNumber('kD', 0)
+        # self.kf = self.dashboard.getNumber('kF', 0)

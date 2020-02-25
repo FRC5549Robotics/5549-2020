@@ -14,13 +14,10 @@ class Semicircle:
 
     def run(self, state):
         # run indexer forward
-        speed = 0.5
+        speed = 1
         if state == 'Forward':
             self.semicircleMotor.set(speed)
-            # self.lexanParallelMotor.set(speed)
         elif state == 'Reverse':
             self.semicircleMotor.set(-speed)
-            # self.lexanParallelMotor.set(-speed)
         elif state == 'Stop':
             self.semicircleMotor.set(0)
-            # self.lexanParallelMotor.set(0)

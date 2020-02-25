@@ -18,4 +18,4 @@ class Lift:
         if runLiftButtonStatus is True:
             self.liftMotor.set(1)
         elif runLiftButtonStatus is False:
-            self.liftMotor.set(0)
+            self.liftMotor.stopMotor()
