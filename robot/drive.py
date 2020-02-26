@@ -33,6 +33,7 @@ class Drive:
 
         """ NavX """
         self.navx = navx.AHRS.create_spi()
+        self.navx.reset()
 
         """ PID """
         # # pid constants
@@ -60,6 +61,8 @@ class Drive:
         if turnButtonStatus is True:
             if self.navx.getAngle():
                 self.drive.tankDrive(0.5, -0.5)
+        else:
+            pass
 
     def changeGear(self, buttonStatus):
         # switches gear mode

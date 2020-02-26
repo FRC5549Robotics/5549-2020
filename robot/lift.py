@@ -21,9 +21,12 @@ class Lift:
             # lift in - test to see if kReverse if actually lift in in this case
             self.liftSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
 
-    def runMotor(self, runLiftButtonStatus):
+    def getLiftSolenoid(self):
+        return self.liftSolenoid.get()
+
+    def runMotor(self, runLift):
         # runs motor if the 'y' button is being pressed
-        if runLiftButtonStatus is True:
+        if runLift > 0.1:
             self.liftMotor.set(1)
-        elif runLiftButtonStatus is False:
+        else:
             self.liftMotor.stopMotor()

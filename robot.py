@@ -3,7 +3,6 @@ Infinite Recharge - Manticore from FRC 5549: Gryphon Robotics
 """
 # import packages
 import wpilib
-import navx
 from ctre import *
 from robot import *
 from networktables import NetworkTables
@@ -61,14 +60,17 @@ class Manticore(wpilib.TimedRobot):
         # button to run intake, indexer, and semicircle
         self.intakeBall = self.xbox.getRawAxis(1)
 
+        # button for autoaim
+        self.turnButtonStatus = Toggle(self.xbox, 6)
+
         """ Pneumatics """
         # pneumatic compressor
         self.compressor = wpilib.Compressor(0)
         self.compressor.setClosedLoopControl(True)
         self.compressor.start()
 
+        """ Shooter """
         self.shooter.reset()
-
 
     def autonomousInit(self):
         pass
@@ -103,6 +105,7 @@ class Manticore(wpilib.TimedRobot):
 
         # changing drive train gears
         self.drive.changeGear(self.gearButtonStatus.get())
+
         # sending drive train gear status to dashboard
         self.dashboard.dashboardGearStatus(self.drive.getGearSolenoid())
 
@@ -114,20 +117,18 @@ class Manticore(wpilib.TimedRobot):
         self.lift.changeLift(self.liftButtonStatus.get())
 
         # sending lift state status to dashboard
-        # self.dashboard.dashboardGearStatus(self.drive.getGearSolenoid())
-        # self.dashboard.dashboardLiftStatus(self.drive.getLiftSolenoid())
+        self.dashboard.dashboardLiftStatus(self.lift.getLiftSolenoid())
 
         """ Auto Turn w/ NavX """
-        # self.drive.turnToAngle(self.turnButtonStatus.get(), angle=90)
+        self.drive.turnToAngle(self.turnButtonStatus.get(), angle=90)
 
         """ Compressor """
-        # self.dashboard.dashboardCompressorStatus(self.compressor.enabled())
+        self.dashboard.dashboardCompressorStatus(self.compressor.enabled())
 
         """ Shooter """
         # send RPM of shooter
         self.dashboard.shooterRPMStatus(self.shooter.getTopShooterRPM(), self.shooter.getBottomShooterRPM())
         if self.xbox.getRawAxis(3) != 0:
-            # self.shooter.fullSpeed(1)
             self.shooter.setShooterRPM('Both', 3000)    # max output 3600 x 1.5 rpm
         else:
             self.shooter.setShooterRPM('Stop', 0)
@@ -153,9 +154,6 @@ class Manticore(wpilib.TimedRobot):
             self.intake.run('Stop')
             self.indexer.run('Stop')
             self.semicircle.run('Stop')
-
-        """ Auto Aim """
-
 
 
 

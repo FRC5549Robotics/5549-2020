@@ -18,7 +18,6 @@ class Shooter:
         self.bottomShooterMotor = WPI_VictorSPX(8)
 
         # inverses shooter motors
-        # self.topShooterEncoder.setInverted(True)
         self.bottomShooterEncoder.setInverted(True)
 
         # shooter motor groups
@@ -68,10 +67,10 @@ class Shooter:
         :return rpm:
         :rtype rpm: float
         """
-        if motors == 'Top':
-            topEncoderVelocity = self.topShooterEncoder.getSelectedSensorVelocity()
-            topShooterRPM = Shooter.convertVelocityToRPM(topEncoderVelocity)
-            return topShooterRPM
+
+        topEncoderVelocity = self.topShooterEncoder.getSelectedSensorVelocity()
+        topShooterRPM = Shooter.convertVelocityToRPM(topEncoderVelocity)
+        return topShooterRPM
 
     def getTopShooterRPM(self):
         topEncoderVelocity = self.topShooterEncoder.getSelectedSensorVelocity()
@@ -95,9 +94,10 @@ class Shooter:
             self.topMotors.stopMotor()
             self.bottomMotors.stopMotor()
 
-    def fullSpeed(self, power):
-        self.topMotors.set(power)
-        self.bottomMotors.set(power)
+    def shooterPower(self, topPower, bottomPower):
+        self.topMotors.set(topPower)
+        self.bottomMotors.set(bottomPower)
+
 
     def shootPreDefinedLengths(self, listIndexNumber):
         """ This method will set the rpm of the motors

@@ -30,6 +30,20 @@ class Dashboard:
         elif solenoidValue == 2:
             self.dashboard.putString("Gear Status", "High")
 
+    def dashboardLiftStatus(self, solenoidValue):
+        # display high/low gear to dashboard
+        if solenoidValue == 1:
+            self.dashboard.putString("Lift Status", "Down")
+        elif solenoidValue == 2:
+            self.dashboard.putString("Lift Status", "Up")
+
+    def dashboardCompressorStatus(self, compressorValue):
+        # display high/low gear to dashboard
+        if compressorValue == True:
+            self.dashboard.putString("Compressor Status", "On")
+        elif compressorValue == False:
+            self.dashboard.putString("Compressor Status", "Off")
+
     def driveStatus(self, driveButton):
         # display drive type to dashboard
         if driveButton == 'Tank Drive':

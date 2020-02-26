@@ -16,4 +16,4 @@ class Vision:
 
     # def getDistance(self):
     #     # finds distance to target using limelight
-    #     # self.distanceToTarget = (self.heightTarget - self.heightCamera) / math.tan(self.angleMount + self.verticalAngleToTarget)
+    #     self.distanceToTarget = (self.heightTarget - self.heightCamera) / math.tan(self.angleMount + self.verticalAngleToTarget)
