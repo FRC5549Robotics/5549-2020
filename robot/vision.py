@@ -14,6 +14,6 @@ class Vision:
         # self.verticalAngleToTarget = NetworkTables.getTable("limelight").getNumber('ty', None) # finds vertical angle to target
         # self.horizontalAngleToTarget = NetworkTables.getTable("limelight").getNumber('tx', None) # finds horizontal angle to target
 
-    def getDistance(self):
-        # finds distance to target using limelight
-        self.distanceToTarget = (self.heightTarget - self.heightCamera) / math.tan(self.angleMount + self.verticalAngleToTarget)
+    # def getDistance(self):
+    #     # finds distance to target using limelight
+    #     # self.distanceToTarget = (self.heightTarget - self.heightCamera) / math.tan(self.angleMount + self.verticalAngleToTarget)

@@ -9,7 +9,6 @@ from robot import *
 from networktables import NetworkTables
 from robotpy_ext.control.toggle import Toggle
 from wpilib.drive import DifferentialDrive
-import navx
 
 """
 Motor Mapping
@@ -56,14 +55,8 @@ class Manticore(wpilib.TimedRobot):
         # button for gear shifting
         self.gearButtonStatus = Toggle(self.rightJoystick, 1)
 
-        # button for lift
-        self.liftButtonStatus = Toggle(self.xbox, 8)
-
-        # button for auto turn
-        self.turnButtonStatus = Toggle(self.xbox, 10)   # this button status is a test for now
-
-        # button to start shooter
-        self.shooterLaunch = self.xbox.getRawAxis(3)
+        # button for lift actuation
+        self.liftButtonStatus = Toggle(self.xbox, 5)
 
         # button to run intake, indexer, and semicircle
         self.intakeBall = self.xbox.getRawAxis(1)
@@ -74,6 +67,8 @@ class Manticore(wpilib.TimedRobot):
         self.compressor.setClosedLoopControl(True)
         self.compressor.start()
 
+        self.shooter.reset()
+
 
     def autonomousInit(self):
         pass
@@ -82,9 +77,12 @@ class Manticore(wpilib.TimedRobot):
         pass
 
     def teleopInit(self):
-        pass
+        self.shooter.reset()
 
     def teleopPeriodic(self):
+
+        [self.kP, self.kI, self.kD] = self.dashboard.getPID()
+        self.shooter.setPID(self.kP, self.kI, self.kD)
 
         """ Drive """
         # get joystick values
@@ -110,7 +108,7 @@ class Manticore(wpilib.TimedRobot):
 
         """ Lift """
         # run lift
-        self.lift.runMotor(self.xbox.getRawButton(4))
+        self.lift.runMotor(self.xbox.getRawAxis(2))
 
         # changing lift state
         self.lift.changeLift(self.liftButtonStatus.get())
@@ -120,13 +118,19 @@ class Manticore(wpilib.TimedRobot):
         # self.dashboard.dashboardLiftStatus(self.drive.getLiftSolenoid())
 
         """ Auto Turn w/ NavX """
-        self.drive.turnToAngle(self.turnButtonStatus.get(), angle=90)
+        # self.drive.turnToAngle(self.turnButtonStatus.get(), angle=90)
 
         """ Compressor """
         # self.dashboard.dashboardCompressorStatus(self.compressor.enabled())
 
         """ Shooter """
-        self.shooter.initializeShooter(self.xbox.getRawAxis(3))
+        # send RPM of shooter
+        self.dashboard.shooterRPMStatus(self.shooter.getTopShooterRPM(), self.shooter.getBottomShooterRPM())
+        if self.xbox.getRawAxis(3) != 0:
+            # self.shooter.fullSpeed(1)
+            self.shooter.setShooterRPM('Both', 3000)    # max output 3600 x 1.5 rpm
+        else:
+            self.shooter.setShooterRPM('Stop', 0)
 
         """ Intake and Indexer"""
         # use 'forward', 'reverse', 'stop'

@@ -4,6 +4,7 @@ import wpilib
 import navx
 from ctre import *
 from wpilib.drive import DifferentialDrive
+from wpilib.controller import PIDController
 
 
 class Drive:
@@ -31,26 +32,25 @@ class Drive:
         self.gearSolenoid = wpilib.DoubleSolenoid(2, 3)    # check these numbers
 
         """ NavX """
-        self.navx = navx.ahrs.AHRS.create_spi()
-        self.navx.reset()
+        self.navx = navx.AHRS.create_spi()
 
         """ PID """
-        # pid constants
-        kP = 0.00
-        kI = 0.00
-        kD = 0.00
-        kF = 0.00
+        # # pid constants
+        # kP = 0.00
+        # kI = 0.00
+        # kD = 0.00
+        # kF = 0.00
 
-        # pid controller
-        self.PIDNavX = wpilib.PIDController(kP, kI, kD, kF, self.navx, output=self)
-        self.PIDNavX.setInputRange(0, 180)   # navx input - this says navx can go from 0 to 180 degrees
-                                            # adjust as needed
-        self.PIDNavX.setOutputRange(-0.5, 0.5)  # adjusting power for now. check values and type
-        self.PIDNavX.setAbsoluteTolerance(1.0)  # setting the max it can miss by - 1 degrees
-        self.PIDNavX.setContinuous(True)    # check to see if we need this
+        # # pid controller
+        # self.PIDNavX = PIDController(kP, kI, kD)
+        # self.PIDNavX.setInputRange(0, 180)   # navx input - this says navx can go from 0 to 180 degrees
+        #                                     # adjust as needed
+        # self.PIDNavX.setOutputRange(-0.5, 0.5)  # adjusting power for now. check values and type
+        # self.PIDNavX.setAbsoluteTolerance(1.0)  # setting the max it can miss by - 1 degrees
+        # self.PIDNavX.setContinuous(True)    # check to see if we need this
 
-    def pidWrite(self, output):
-        self.turnRate = output
+    # def pidWrite(self, output):
+    #     self.turnRate = output
 
     def getGearSolenoid(self):
         return self.gearSolenoid.get()
@@ -58,11 +58,8 @@ class Drive:
     def turnToAngle(self, turnButtonStatus, angle):
         # turn robot to specified angle values using navx
         if turnButtonStatus is True:
-            self.PIDNavX.setSetpoint(angle)
-            self.doTurn = True
-        elif turnButtonStatus is False:
-            self.PIDNavX.setSetpoint(0)
-            self.doTurn = False
+            if self.navx.getAngle():
+                self.drive.tankDrive(0.5, -0.5)
 
     def changeGear(self, buttonStatus):
         # switches gear mode
@@ -75,11 +72,11 @@ class Drive:
 
     def tankDrive(self, leftJoystickAxis, rightJoystickAxis):
         # tank drive at set scaling
-        scaling = 0.5
+        scaling = 1
         self.drive.tankDrive(-leftJoystickAxis * scaling, rightJoystickAxis * scaling, True)
 
     def arcadeDrive(self, rightJoystickAxis, rotateAxis):
         # arcade drive at set scaling
-        scaling = 0.5
+        scaling = 1
         self.drive.arcadeDrive(rotateAxis, -rightJoystickAxis * scaling, True)
 
