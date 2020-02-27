@@ -15,6 +15,7 @@ class Dashboard:
         logging.basicConfig(level=logging.DEBUG)
         # getting shuffleboard
         self.dashboard = NetworkTables.getTable("SmartDashboard")
+        self.limelightdash = NetworkTables.getTable("limelight")
 
         # initializing dashboard
         NetworkTables.initialize(server='10.55.49.2')
@@ -61,3 +62,10 @@ class Dashboard:
     def shooterRPMStatus(self, TopRPMGetter, BottomRPMGetter):
         self.dashboard.putNumber("Top Shooter RPM", TopRPMGetter)
         self.dashboard.putNumber("Bottom Shooter RPM", BottomRPMGetter)
+
+    def limelight(self, value):
+        if value = 'tx':
+            return limelightdash.getNumber('tx', None)
+        elif value = 'ty':
+            return limelightdash.getNumber('ty', None)
+

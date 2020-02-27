@@ -86,6 +86,9 @@ class Manticore(wpilib.TimedRobot):
         [self.kP, self.kI, self.kD] = self.dashboard.getPID()
         self.shooter.setPID(self.kP, self.kI, self.kD)
 
+        tx = self.dashboard.limelight('tx')
+        ty = self.dashboard.limelight('ty')
+
         """ Drive """
         # get joystick values
         self.driveLeft = self.leftJoystick.getRawAxis(1)
@@ -120,7 +123,8 @@ class Manticore(wpilib.TimedRobot):
         self.dashboard.dashboardLiftStatus(self.lift.getLiftSolenoid())
 
         """ Auto Turn w/ NavX """
-        self.drive.turnToAngle(self.turnButtonStatus.get(), angle=90)
+        if self.turnButtonStatus is True:
+            self.drive.turnToAngle('tx')
 
         """ Compressor """
         self.dashboard.dashboardCompressorStatus(self.compressor.enabled())

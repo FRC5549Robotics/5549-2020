@@ -44,8 +44,7 @@ class Drive:
 
         # # pid controller
         # self.PIDNavX = PIDController(kP, kI, kD)
-        # self.PIDNavX.setInputRange(0, 180)   # navx input - this says navx can go from 0 to 180 degrees
-        #                                     # adjust as needed
+        # self.PIDNavX.setInputRange(0, 360)   # navx input - this says navx can go from 0 to 360 degrees
         # self.PIDNavX.setOutputRange(-0.5, 0.5)  # adjusting power for now. check values and type
         # self.PIDNavX.setAbsoluteTolerance(1.0)  # setting the max it can miss by - 1 degrees
         # self.PIDNavX.setContinuous(True)    # check to see if we need this
@@ -56,12 +55,22 @@ class Drive:
     def getGearSolenoid(self):
         return self.gearSolenoid.get()
 
-    def turnToAngle(self, turnButtonStatus, angle):
+    def turnToAngle(self, angle):
         # turn robot to specified angle values using navx
-        if turnButtonStatus is True:
-            if self.navx.getAngle():
-                self.drive.tankDrive(0.5, -0.5)
-        else:
+        if self.navx.getAngle() > angle:
+            self.drive.tankDrive(0.5, -0.5)
+        elif self.navx.getAngle() < angle
+            self.drive.tankDrive(-0.5, 0.5)
+        elif abs(self.navx.getAngle()-angle) < 3:
+            pass
+
+    def turnToTarget(self, tx):
+        # turn robot to specified angle values using navx
+        if tx > 2:
+            self.drive.tankDrive(-0.5, 0.5)
+        elif tx < -2:
+            self.drive.tankDrive(0.5, -0.5)
+        elif abs(tx) < 2:
             pass
 
     def changeGear(self, buttonStatus):
