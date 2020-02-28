@@ -82,9 +82,13 @@ class Manticore(wpilib.TimedRobot):
         self.shooter.reset()
 
     def teleopPeriodic(self):
+        # shooter PID
+        [self.shooterkP, self.shooterkI, self.shooterkD] = self.dashboard.getPID('Shooter')
+        self.shooter.setPID(self.shooterkP, self.shooterkI, self.shooterkD)
 
-        [self.kP, self.kI, self.kD] = self.dashboard.getPID()
-        self.shooter.setPID(self.kP, self.kI, self.kD)
+        # drive PID
+        [self.drivekP, self.drivekI, self.drivekD] = self.dashboard.getPID('Drive')
+        self.drive.setPID(self.drivekP, self.drivekI, self.drivekD)
 
         tx = self.dashboard.limelight('tx')
         ty = self.dashboard.limelight('ty')

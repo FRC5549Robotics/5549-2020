@@ -6,6 +6,7 @@ from wpilib.controller import PIDController
 # main shooter class
 from robot import Dashboard
 
+
 class Shooter:
     def __init__(self):
         # assigning functions
@@ -98,7 +99,6 @@ class Shooter:
         self.topMotors.set(topPower)
         self.bottomMotors.set(bottomPower)
 
-
     def shootPreDefinedLengths(self, listIndexNumber):
         """ This method will set the rpm of the motors
         The top rpm and bottom rpm will be set based on the stored ranges
@@ -116,10 +116,6 @@ class Shooter:
 
     def shootAutonomous(self, distance):
         # automatically shoot balls given distance
-        pass
-
-    def initializeShooter(self, shoot):
-        # start up shooter motors before shooting
         pass
 
 
