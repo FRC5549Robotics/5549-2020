@@ -45,6 +45,10 @@ class Shooter:
             self.PIDShooterTop.setPID(kP, kI, kD)
         if motor == 'Bottom':
             self.PIDShooterBottom.setPID(kP, kI, kD)
+        if motor == 'Both':
+            self.PIDShooterTop.setPID(kP, kI, kD)
+            self.PIDShooterBottom.setPID(kP, kI, kD)
+
 
 
     def reset(self, motor):
