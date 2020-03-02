@@ -32,7 +32,7 @@ Motor Mapping
 
 class Manticore(wpilib.TimedRobot):
     def robotInit(self):
-        # adding functions
+        """ Functions """
         self.dashboard = Dashboard()
         self.drive = Drive()
         self.indexer = Indexer()
@@ -42,11 +42,13 @@ class Manticore(wpilib.TimedRobot):
         self.shooter = Shooter()
         self.vision = Vision()
 
+
         """ Joystick """
         # setting joysticks and xbox controllers
         self.leftJoystick = wpilib.Joystick(0)
         self.rightJoystick = wpilib.Joystick(1)
         self.xbox = wpilib.Joystick(2)
+
 
         """ Button Status and Toggles """
         # button for switching between arcade and tank drive
@@ -64,19 +66,21 @@ class Manticore(wpilib.TimedRobot):
         # button for autoaim
         self.turnButtonStatus = self.xbox.getRawButton(6)
 
+
         """ Pneumatics """
         # pneumatic compressor
         self.compressor = wpilib.Compressor(0)
         self.compressor.setClosedLoopControl(True)
         self.compressor.start()
 
+
         """ Shooter """
-        self.shooter.reset('Top')
+        self.shooter.reset('Both')
+
 
         """" Limit Switch """
         self.limitSwitch = wpilib.DigitalInput(0)
         self.ballsInPossession = 0
-        # self.lastTimeLimitSwitch = timeit.default_timer()
         self.limitSwitchTriggered = False
 
     def autonomousInit(self):
@@ -86,45 +90,47 @@ class Manticore(wpilib.TimedRobot):
         pass
 
     def teleopInit(self):
-        self.shooter.reset('Both')
+        pass
 
     def teleopPeriodic(self):
+        """ PIDs """
         # shooter PID
-        [self.shooterkP, self.shooterkI, self.shooterkD] = self.dashboard.getPID('Shooter')
-        self.shooterkP = 0.1
-        self.shooter.setPID(self.shooterkP, self.shooterkI, self.shooterkD, 'Top')
+        # [self.shooterkP, self.shooterkI, self.shooterkD] = self.dashboard.getPID('Shooter')
+        [self.shooterkP, self.shooterkI, self.shooterkD] = [0.1, 0.0, 0.0]
+        self.shooter.setPID(self.shooterkP, self.shooterkI, self.shooterkD, 'Both')
 
         # drive PID
         [self.drivekP, self.drivekI, self.drivekD] = self.dashboard.getPID('Drive')
         self.drive.setPID(self.drivekP, self.drivekI, self.drivekD)
 
-        self.tx = self.dashboard.limelightDash.getNumber('tx', None)
-        self.ty = self.dashboard.limelightDash.getNumber('ty', None)
-        self.dashboard.limelightHorizontalAngle(self.tx)
 
+        """ Updating Dashboard Values """
+        # limelight
+        self.tx = self.dashboard.limelight.getNumber('tx')
+        self.ty = self.dashboard.limelight.getNumber('ty')
+        self.dashboard.limelightHorizontalAngle(self.tx)
         self.distance = self.vision.getDistance(self.ty)
         self.dashboard.distance(self.distance)
 
+        # navx
         self.navxAngle = self.drive.navx.getAngle()
         self.navxAngle = self.navxAngle % 360
         self.dashboard.navxAngle(self.navxAngle)
 
-        # currentTime = timeit.default_timer()
 
-        if self.limitSwitch.get() is False and self.limitSwitchTriggered is False: # and ((currentTime - self.lastTimeLimitSwitch) > 2)
-            self.ballsInPossession += 1
-            # self.lastTimeLimitSwitch = currentTime
-            self.limitSwitchTriggered = True
-        elif self.limitSwitch.get() is True:
-            self.limitSwitchTriggered = False
-
-
-        """ Drive """
-        # get joystick values
+        """ Updating Button and Joystick Values"""
+        # joystick values
         self.driveLeft = self.leftJoystick.getRawAxis(1)
         self.driveRight = self.rightJoystick.getRawAxis(1)
         self.driveRotate = self.rightJoystick.getRawAxis(2)
 
+        # xbox
+        self.shooterLaunch = self.xbox.getRawAxis(3)
+        self.autoTurnButton = self.xbox.getRawButton(6)
+        self.dpad = self.xbox.getPOV()
+
+
+        """ Drive """
         # changing between arcade and tank drive
         if self.driveButtonStatus.on is True:
             self.drive.tankDrive(self.driveLeft, self.driveRight)
@@ -142,48 +148,60 @@ class Manticore(wpilib.TimedRobot):
         # sending drive train gear status to dashboard
         self.dashboard.dashboardGearStatus(self.drive.getGearSolenoid())
 
-        """ Lift """
-        # run lift
-        if self.lift.getLiftSolenoid() == 2:
-            self.lift.runMotor(self.xbox.getRawAxis(2))
 
+        """ Lift """
         # changing lift state
         self.lift.changeLift(self.liftButtonStatus.get())
+
+        # only runs lift if up
+        if self.lift.getLiftSolenoid() == 2:
+            self.lift.runMotor(self.xbox.getRawAxis(2))
 
         # sending lift state status to dashboard
         self.dashboard.dashboardLiftStatus(self.lift.getLiftSolenoid())
 
-        """ Auto Turn w/ NavX """
-        if self.xbox.getRawButton(6) is True:
-            self.drive.turnToTarget(self.tx)
 
         """ Compressor """
         self.dashboard.dashboardCompressorStatus(self.compressor.enabled())
 
+
         """ Shooter """
-        # send RPM of shooter
-        self.dashboard.shooterRPMStatus(self.shooter.getShooterRPM('Top'), self.shooter.getShooterRPM('Bottom'))
-        if self.xbox.getRawAxis(3) != 0:
-            self.shooter.topMotors.set(self.shooter.setShooterRPM('Top', 2750))
-            self.shooter.bottomMotors.set(self.shooter.setShooterRPM('Top', 2750))
-            # self.shooter.bottomMotors.set(0.5)
+        # sets shooter at a certain RPM if the trigger is being pressed
+        if self.shooterLaunch != 0:
+            self.shooter.shooterPower(self.shooter.setShooterRPM('Both', 2750))
             self.ballsInPossession = 0
         else:
             self.shooter.setShooterRPM('Stop', 0)
 
-        """ Intake and Indexer"""
-        # use 'forward', 'reverse', 'stop'
-        if self.xbox.getPOV() == 0:
+        # send RPM of shooter
+        self.dashboard.shooterRPMStatus(self.shooter.getShooterRPM('Top'), self.shooter.getShooterRPM('Bottom'))
+
+
+        """ Intake, Indexer, and Semicrcle"""
+        # checks for amount of balls in semicircle
+        if self.limitSwitch.get() is False and self.limitSwitchTriggered is False:
+            self.ballsInPossession += 1
+            self.limitSwitchTriggered = True
+        elif self.limitSwitch.get() is True:
+            self.limitSwitchTriggered = False
+
+        self.dashboard.ballsObtained(self.ballsInPossession)
+
+        # uses 'forward', 'reverse', 'stop'
+        if self.dpad == 0:
+            # ejects balls from intake
             self.intake.run('Reverse')
             self.indexer.run('Stop')
             self.semicircle.run('Stop')
 
-        elif self.xbox.getPOV() == 180 and self.ballsInPossession < 3:
+        elif self.dpad == 180 and self.ballsInPossession < 3:
+            # runs intake, indexer, and semicircle if there are less than three balls in the semicircle
             self.intake.run('Forward')
             self.indexer.run('Forward')
             self.semicircle.run('Forward')
 
-        elif self.xbox.getPOV() == 180 and self.ballsInPossession >= 3:
+        elif self.dpad == 180 and self.ballsInPossession >= 3:
+            # runs only intake if there are three or more balls in the semicircle
             self.intake.run('Forward')
             self.indexer.run('Stop')
             self.semicircle.run('Stop')
@@ -193,7 +211,10 @@ class Manticore(wpilib.TimedRobot):
             self.indexer.run('Stop')
             self.semicircle.run('Stop')
 
-        self.dashboard.ballsObtained(self.ballsInPossession)
+
+        """ Auto Turn w/ NavX """
+        if self.autoTurnButton is True:
+            self.drive.turnToTarget(self.tx)
 
 
 

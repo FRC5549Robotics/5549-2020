@@ -14,21 +14,24 @@ class Lift:
 
         self.liftMotor.setInverted(True)
 
+
     def changeLift(self, liftButtonStatus):
         # changes the position of the lift
         if liftButtonStatus is True:
-            # lift out - test to see if kForward is actually lift out in this case
+            # lift up
             self.liftSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
         elif liftButtonStatus is False:
-            # lift in - test to see if kReverse if actually lift in in this case
+            # lift down
             self.liftSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+
 
     def getLiftSolenoid(self):
         return self.liftSolenoid.get()
 
+
     def runMotor(self, runLift):
-        # runs motor if the 'y' button is being pressed
-        if runLift > 0.1:
+        # runs motor if the left trigger button is being pressed
+        if runLift > 0.5:
             self.liftMotor.set(1)
         else:
             self.liftMotor.stopMotor()

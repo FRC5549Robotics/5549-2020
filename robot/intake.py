@@ -12,6 +12,7 @@ class Intake:
         # reverse intake motor
         self.intakeMotor.setInverted(True)
 
+
     def run(self, state):
         # run indexer forward
         speed = 1

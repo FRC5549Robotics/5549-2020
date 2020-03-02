@@ -28,24 +28,24 @@ class Shooter:
         # PID
         self.PIDShooterTop = PIDController(0.1, 0.0, 0.0)
         self.PIDShooterTop.setTolerance(0)
-        self.PIDShooterBottom = PIDController(1.0, 0.0, 0.0)
-        self.PIDShooterBottom.setTolerance(50)
-
+        self.PIDShooterBottom = PIDController(0.1, 0.0, 0.0)
+        self.PIDShooterBottom.setTolerance(0)
 
         # storage for the ranges that the robot can shoot from
-        # first number is the top rpm
-        # second number is the bottom rpm
+        # first number is the top rpm and second number is the bottom rpm
         self.rangesForShooting = [
             [50, 25],
             [40, 20],
             [30, 15]
         ]
 
+
     def setPID(self, kP, kI, kD, motor):
         if motor == 'Top':
             self.PIDShooterTop.setPID(kP, kI, kD)
         if motor == 'Bottom':
             self.PIDShooterBottom.setPID(kP, kI, kD)
+
 
     def reset(self, motor):
         # resets shooter encoder and PID
@@ -56,8 +56,9 @@ class Shooter:
         if motor == 'Bottom':
             self.PIDShooterBottom.reset()
         if motor == 'Both':
-            self.PIDShooterBottom.reset()
             self.PIDShooterTop.reset()
+            self.PIDShooterBottom.reset()
+
 
     def convertVelocityToRPM(velocity):
         """ This method will take in velocity and convert the velocity into rotations per minute
@@ -73,6 +74,7 @@ class Shooter:
         conversionFactor = 600 / 4096
         RPM = velocity * conversionFactor
         return RPM
+
 
     def getShooterRPM(self, motors):
         """ This method will get velocity return rpm of the top or bottom shooter speed controller group
@@ -90,24 +92,27 @@ class Shooter:
             bottomShooterRPM = Shooter.convertVelocityToRPM(bottomEncoderVelocity)
             return bottomShooterRPM
 
+
     def setShooterRPM(self, motors, setpoint):
+        # conversion factor to account for incorrect RPM
         conversionFactor = 3.3
         setpoint = setpoint * conversionFactor
         if motors =='Top':
             self.PIDShooterTopRPM = (self.PIDShooterTop.calculate(self.getShooterRPM('Top'), setpoint) / 1000)
             return self.PIDShooterTopRPM
+
         elif motors == 'Bottom':
-            self.bottomMotors.set((self.PIDShooterBottom.calculate(self.getShooterRPM('Bottom'), setpoint)) / 4000)
-        elif motors == 'Both':
-            self.topMotors.set((self.PIDShooterTop.calculate(self.getShooterRPM('Top'), setpoint)) / 4000)
-            self.bottomMotors.set((self.PIDShooterBottom.calculate(self.getShooterRPM('Bottom'), setpoint)) / 4000)
+            self.PIDShooterBottomRPM = self.bottomMotors.set((self.PIDShooterBottom.calculate(self.getShooterRPM('Bottom'), setpoint)) / 1000)
+
         elif motors == 'Stop':
             self.topMotors.stopMotor()
             self.bottomMotors.stopMotor()
 
+
     def shooterPower(self, topPower, bottomPower):
         self.topMotors.set(topPower)
         self.bottomMotors.set(bottomPower)
+
 
     def shootPreDefinedLengths(self, listIndexNumber):
         """ This method will set the rpm of the motors
@@ -123,9 +128,9 @@ class Shooter:
         # set the shooter rpms to the extracted values
         # self.setTopShooterRPM(self.rangesForShooting[listIndexNumber][1])
         # self.setBottomShooterRPM(self.rangesForShooting[listIndexNumber][2])
+        pass
+
 
     def shootAutonomous(self, distance):
         # automatically shoot balls given distance
         pass
-
-

@@ -27,24 +27,30 @@ class Drive:
         # setting up differential drive
         self.drive = DifferentialDrive(self.leftDrive, self.rightDrive)
 
+
         """ Pneumatics """
         # drive pneumatics
         self.gearSolenoid = wpilib.DoubleSolenoid(2, 3)    # check these numbers
 
+
         """ NavX """
         self.navx = navx.AHRS.create_spi()
         self.navx.reset()
+
 
         """ PID """
         # PID
         self.PIDDrive = PIDController(0.1, 0.0, 0.0)
         self.PIDDrive.setTolerance(100)
 
+
     def setPID(self, kP, kI, kD):
-        self.PIDDrive .setPID(kP, kI, kD)
+        self.PIDDrive.setPID(kP, kI, kD)
+
 
     def getGearSolenoid(self):
         return self.gearSolenoid.get()
+
 
     def turnToAngle(self, angleNavx, angleLimelight):
         # turn robot to specified angle values using navx
@@ -52,16 +58,16 @@ class Drive:
 
 
     def turnToTarget(self, angleLimelight):
-        # turn robot to specified angle values using navx
-        error = 5
+        # turn robot to limelight target
+        error = 4
         if abs(angleLimelight) < error:
-            pass
-        elif angleLimelight == None:
             pass
         elif angleLimelight < -error:
             self.drive.tankDrive(-0.5, -0.5)
         elif angleLimelight > error:
             self.drive.tankDrive(0.5, 0.5)
+        else:
+            pass
 
 
     def changeGear(self, buttonStatus):
@@ -73,13 +79,14 @@ class Drive:
             # low gear
             self.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
 
+
     def tankDrive(self, leftJoystickAxis, rightJoystickAxis):
         # tank drive at set scaling
         scaling = 1
         self.drive.tankDrive(-leftJoystickAxis * scaling, rightJoystickAxis * scaling, True)
 
+
     def arcadeDrive(self, rightJoystickAxis, rotateAxis):
         # arcade drive at set scaling
         scaling = 1
         self.drive.arcadeDrive(rotateAxis, -rightJoystickAxis * scaling, True)
-
