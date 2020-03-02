@@ -81,3 +81,20 @@ class Dashboard:
         elif value == 'ty':
             return self.limelightDash.getNumber('ty', None)
 
+    def ballsObtained(self, value):
+        self.dashboard.putNumber("Balls Obtained", value)
+
+    def limelightHorizontalAngle(self, angle):
+        if angle == None:
+            pass
+        else:
+            self.dashboard.putNumber("Limelight tx", angle)
+
+    def navxAngle(self, angle):
+        self.dashboard.putNumber("NavX Angle", angle)
+
+    def distance(self, distance):
+        if distance == None:
+            pass
+        else:
+            self.dashboard.putNumber("Distance", distance)

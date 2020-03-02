@@ -12,6 +12,8 @@ class Lift:
         # lift pneumatics
         self.liftSolenoid = wpilib.DoubleSolenoid(4, 5)
 
+        self.liftMotor.setInverted(True)
+
     def changeLift(self, liftButtonStatus):
         # changes the position of the lift
         if liftButtonStatus is True:

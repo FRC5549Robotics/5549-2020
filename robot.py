@@ -8,6 +8,7 @@ from robot import *
 from networktables import NetworkTables
 from robotpy_ext.control.toggle import Toggle
 from wpilib.drive import DifferentialDrive
+import timeit
 
 """
 Motor Mapping
@@ -61,7 +62,7 @@ class Manticore(wpilib.TimedRobot):
         self.intakeBall = self.xbox.getRawAxis(1)
 
         # button for autoaim
-        self.turnButtonStatus = Toggle(self.xbox, 6)
+        self.turnButtonStatus = self.xbox.getRawButton(6)
 
         """ Pneumatics """
         # pneumatic compressor
@@ -70,7 +71,13 @@ class Manticore(wpilib.TimedRobot):
         self.compressor.start()
 
         """ Shooter """
-        self.shooter.reset()
+        self.shooter.reset('Top')
+
+        """" Limit Switch """
+        self.limitSwitch = wpilib.DigitalInput(0)
+        self.ballsInPossession = 0
+        # self.lastTimeLimitSwitch = timeit.default_timer()
+        self.limitSwitchTriggered = False
 
     def autonomousInit(self):
         pass
@@ -79,19 +86,38 @@ class Manticore(wpilib.TimedRobot):
         pass
 
     def teleopInit(self):
-        self.shooter.reset()
+        self.shooter.reset('Both')
 
     def teleopPeriodic(self):
         # shooter PID
         [self.shooterkP, self.shooterkI, self.shooterkD] = self.dashboard.getPID('Shooter')
-        self.shooter.setPID(self.shooterkP, self.shooterkI, self.shooterkD)
+        self.shooterkP = 0.1
+        self.shooter.setPID(self.shooterkP, self.shooterkI, self.shooterkD, 'Top')
 
         # drive PID
         [self.drivekP, self.drivekI, self.drivekD] = self.dashboard.getPID('Drive')
         self.drive.setPID(self.drivekP, self.drivekI, self.drivekD)
 
-        tx = self.dashboard.limelight('tx')
-        ty = self.dashboard.limelight('ty')
+        self.tx = self.dashboard.limelightDash.getNumber('tx', None)
+        self.ty = self.dashboard.limelightDash.getNumber('ty', None)
+        self.dashboard.limelightHorizontalAngle(self.tx)
+
+        self.distance = self.vision.getDistance(self.ty)
+        self.dashboard.distance(self.distance)
+
+        self.navxAngle = self.drive.navx.getAngle()
+        self.navxAngle = self.navxAngle % 360
+        self.dashboard.navxAngle(self.navxAngle)
+
+        # currentTime = timeit.default_timer()
+
+        if self.limitSwitch.get() is False and self.limitSwitchTriggered is False: # and ((currentTime - self.lastTimeLimitSwitch) > 2)
+            self.ballsInPossession += 1
+            # self.lastTimeLimitSwitch = currentTime
+            self.limitSwitchTriggered = True
+        elif self.limitSwitch.get() is True:
+            self.limitSwitchTriggered = False
+
 
         """ Drive """
         # get joystick values
@@ -118,7 +144,8 @@ class Manticore(wpilib.TimedRobot):
 
         """ Lift """
         # run lift
-        self.lift.runMotor(self.xbox.getRawAxis(2))
+        if self.lift.getLiftSolenoid() == 2:
+            self.lift.runMotor(self.xbox.getRawAxis(2))
 
         # changing lift state
         self.lift.changeLift(self.liftButtonStatus.get())
@@ -127,17 +154,20 @@ class Manticore(wpilib.TimedRobot):
         self.dashboard.dashboardLiftStatus(self.lift.getLiftSolenoid())
 
         """ Auto Turn w/ NavX """
-        if self.turnButtonStatus is True:
-            self.drive.turnToAngle('tx')
+        if self.xbox.getRawButton(6) is True:
+            self.drive.turnToTarget(self.tx)
 
         """ Compressor """
         self.dashboard.dashboardCompressorStatus(self.compressor.enabled())
 
         """ Shooter """
         # send RPM of shooter
-        self.dashboard.shooterRPMStatus(self.shooter.getTopShooterRPM(), self.shooter.getBottomShooterRPM())
+        self.dashboard.shooterRPMStatus(self.shooter.getShooterRPM('Top'), self.shooter.getShooterRPM('Bottom'))
         if self.xbox.getRawAxis(3) != 0:
-            self.shooter.setShooterRPM('Both', 3000)    # max output 3600 x 1.5 rpm
+            self.shooter.topMotors.set(self.shooter.setShooterRPM('Top', 2750))
+            self.shooter.bottomMotors.set(self.shooter.setShooterRPM('Top', 2750))
+            # self.shooter.bottomMotors.set(0.5)
+            self.ballsInPossession = 0
         else:
             self.shooter.setShooterRPM('Stop', 0)
 
@@ -148,20 +178,22 @@ class Manticore(wpilib.TimedRobot):
             self.indexer.run('Stop')
             self.semicircle.run('Stop')
 
-        elif self.xbox.getPOV() == 180:
+        elif self.xbox.getPOV() == 180 and self.ballsInPossession < 3:
             self.intake.run('Forward')
             self.indexer.run('Forward')
             self.semicircle.run('Forward')
 
-        elif self.xbox.getRawButton(2) is True:
-            self.intake.run('Stop')
-            self.indexer.run('Forward')
-            self.semicircle.run('Forward')
+        elif self.xbox.getPOV() == 180 and self.ballsInPossession >= 3:
+            self.intake.run('Forward')
+            self.indexer.run('Stop')
+            self.semicircle.run('Stop')
 
         else:
             self.intake.run('Stop')
             self.indexer.run('Stop')
             self.semicircle.run('Stop')
+
+        self.dashboard.ballsObtained(self.ballsInPossession)
 
 
 

@@ -7,10 +7,14 @@ import math
 
 class Vision:
     def __init__(self):
-        self.heightCamera = 0  # change later
-        self.heightTarget = 0  # change later
-        self.angleMount = 0  # change later
+        self.heightCamera = 20.0
+        self.heightTarget = 115.25
+        self.angleMount = 15  # change later
 
-    # def getDistance(self, ty):
-    #     # finds distance to target using limelight
-    #     self.distanceToTarget = (self.heightTarget - self.heightCamera) / math.tan(self.angleMount + self.verticalAngleToTarget)
+    def getDistance(self, ty):
+        # finds distance to target using limelight
+        if ty == None:
+            pass
+        else:
+            distanceToTarget = ((self.heightTarget - self.heightCamera) / math.tan(self.angleMount + ty))
+            return distanceToTarget

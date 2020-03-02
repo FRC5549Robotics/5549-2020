@@ -46,23 +46,23 @@ class Drive:
     def getGearSolenoid(self):
         return self.gearSolenoid.get()
 
-    def turnToAngle(self, angle):
+    def turnToAngle(self, angleNavx, angleLimelight):
         # turn robot to specified angle values using navx
-        if self.navx.getAngle() > angle:
-            self.drive.tankDrive(0.5, -0.5)
-        elif self.navx.getAngle() < angle:
-            self.drive.tankDrive(-0.5, 0.5)
-        elif abs(self.navx.getAngle()-angle) < 3:
-            pass
+        pass
 
-    def turnToTarget(self, tx):
+
+    def turnToTarget(self, angleLimelight):
         # turn robot to specified angle values using navx
-        if tx > 2:
-            self.drive.tankDrive(-0.5, 0.5)
-        elif tx < -2:
-            self.drive.tankDrive(0.5, -0.5)
-        elif abs(tx) < 2:
+        error = 5
+        if abs(angleLimelight) < error:
             pass
+        elif angleLimelight == None:
+            pass
+        elif angleLimelight < -error:
+            self.drive.tankDrive(-0.5, -0.5)
+        elif angleLimelight > error:
+            self.drive.tankDrive(0.5, 0.5)
+
 
     def changeGear(self, buttonStatus):
         # switches gear mode

@@ -19,15 +19,18 @@ class Shooter:
         self.bottomShooterMotor = WPI_VictorSPX(8)
 
         # inverses shooter motors
-        self.bottomShooterEncoder.setInverted(True)
+        self.topShooterMotor.setInverted(True)
 
         # shooter motor groups
         self.topMotors = wpilib.SpeedControllerGroup(self.topShooterEncoder, self.topShooterMotor)
         self.bottomMotors = wpilib.SpeedControllerGroup(self.bottomShooterEncoder, self.bottomShooterMotor)
 
         # PID
-        self.PIDShooter = PIDController(0.1, 0.0, 0.0)
-        self.PIDShooter.setTolerance(100)
+        self.PIDShooterTop = PIDController(0.1, 0.0, 0.0)
+        self.PIDShooterTop.setTolerance(0)
+        self.PIDShooterBottom = PIDController(1.0, 0.0, 0.0)
+        self.PIDShooterBottom.setTolerance(50)
+
 
         # storage for the ranges that the robot can shoot from
         # first number is the top rpm
@@ -38,14 +41,23 @@ class Shooter:
             [30, 15]
         ]
 
-    def setPID(self, kP, kI, kD):
-        self.PIDShooter.setPID(kP, kI, kD)
+    def setPID(self, kP, kI, kD, motor):
+        if motor == 'Top':
+            self.PIDShooterTop.setPID(kP, kI, kD)
+        if motor == 'Bottom':
+            self.PIDShooterBottom.setPID(kP, kI, kD)
 
-    def reset(self):
+    def reset(self, motor):
         # resets shooter encoder and PID
         self.topShooterEncoder.setSelectedSensorPosition(0)
         self.bottomShooterEncoder.setSelectedSensorPosition(0)
-        self.PIDShooter.reset()
+        if motor == 'Top':
+            self.PIDShooterTop.reset()
+        if motor == 'Bottom':
+            self.PIDShooterBottom.reset()
+        if motor == 'Both':
+            self.PIDShooterBottom.reset()
+            self.PIDShooterTop.reset()
 
     def convertVelocityToRPM(velocity):
         """ This method will take in velocity and convert the velocity into rotations per minute
@@ -68,29 +80,27 @@ class Shooter:
         :return rpm:
         :rtype rpm: float
         """
-
-        topEncoderVelocity = self.topShooterEncoder.getSelectedSensorVelocity()
-        topShooterRPM = Shooter.convertVelocityToRPM(topEncoderVelocity)
-        return topShooterRPM
-
-    def getTopShooterRPM(self):
-        topEncoderVelocity = self.topShooterEncoder.getSelectedSensorVelocity()
-        topShooterRPM = Shooter.convertVelocityToRPM(topEncoderVelocity)
-        return topShooterRPM
-
-    def getBottomShooterRPM(self):
-        bottomEncoderVelocity = self.bottomShooterEncoder.getSelectedSensorVelocity()
-        bottomShooterRPM = Shooter.convertVelocityToRPM(bottomEncoderVelocity)
-        return bottomShooterRPM
-
-    def setShooterRPM(self, motors, rpm):
         if motors == 'Top':
-            self.topMotors.set((self.PIDShooter.calculate(self.getTopShooterRPM(), rpm)) / 1000)
+            topEncoderVelocity = self.topShooterEncoder.getSelectedSensorVelocity()
+            topShooterRPM = Shooter.convertVelocityToRPM(topEncoderVelocity)
+            return topShooterRPM
+
         elif motors == 'Bottom':
-            self.bottomMotors.set((self.PIDShooter.calculate(self.getBottomShooterRPM(), rpm)) / 1000)
+            bottomEncoderVelocity = self.bottomShooterEncoder.getSelectedSensorVelocity()
+            bottomShooterRPM = Shooter.convertVelocityToRPM(bottomEncoderVelocity)
+            return bottomShooterRPM
+
+    def setShooterRPM(self, motors, setpoint):
+        conversionFactor = 3.3
+        setpoint = setpoint * conversionFactor
+        if motors =='Top':
+            self.PIDShooterTopRPM = (self.PIDShooterTop.calculate(self.getShooterRPM('Top'), setpoint) / 1000)
+            return self.PIDShooterTopRPM
+        elif motors == 'Bottom':
+            self.bottomMotors.set((self.PIDShooterBottom.calculate(self.getShooterRPM('Bottom'), setpoint)) / 4000)
         elif motors == 'Both':
-            self.topMotors.set((self.PIDShooter.calculate(self.getTopShooterRPM(), rpm)) / 1000)
-            self.bottomMotors.set((self.PIDShooter.calculate(self.getBottomShooterRPM(), rpm)) / 1000)
+            self.topMotors.set((self.PIDShooterTop.calculate(self.getShooterRPM('Top'), setpoint)) / 4000)
+            self.bottomMotors.set((self.PIDShooterBottom.calculate(self.getShooterRPM('Bottom'), setpoint)) / 4000)
         elif motors == 'Stop':
             self.topMotors.stopMotor()
             self.bottomMotors.stopMotor()
