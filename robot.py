@@ -168,8 +168,16 @@ class Manticore(wpilib.TimedRobot):
         """ Shooter """
         # sets shooter at a certain RPM if the trigger is being pressed
         if self.shooterLaunch != 0:
-            self.shooter.shooterPower(self.shooter.setShooterRPM('Both', 2750))
-            self.ballsInPossession = 0
+            targetRPM = 2750
+            self.shooter.shooterPower(self.shooter.setShooterRPM('Both', targetRPM))
+            if self.shooter.getShooterRPM('Both') >= targetRPM
+                self.ballsInPossession = 0
+                self.indexer.run('Forward')
+                self.semicircle.run('Forward')
+            else:
+                self.indexer.run('Stop')
+                self.semicircle.run('Stop')
+
         else:
             self.shooter.setShooterRPM('Stop', 0)
 

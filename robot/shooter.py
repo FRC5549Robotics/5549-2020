@@ -91,6 +91,14 @@ class Shooter:
             bottomEncoderVelocity = self.bottomShooterEncoder.getSelectedSensorVelocity()
             bottomShooterRPM = Shooter.convertVelocityToRPM(bottomEncoderVelocity)
             return bottomShooterRPM
+        
+        elif motors == 'Both':
+            topEncoderVelocity = self.topShooterEncoder.getSelectedSensorVelocity()
+            topShooterRPM = Shooter.convertVelocityToRPM(topEncoderVelocity)
+            bottomEncoderVelocity = self.bottomShooterEncoder.getSelectedSensorVelocity()
+            bottomShooterRPM = Shooter.convertVelocityToRPM(bottomEncoderVelocity)
+            shooterRPM = (topShooterRPM + bottomShooterRPM) / 2
+            return shooterRPM
 
 
     def setShooterRPM(self, motors, setpoint):
