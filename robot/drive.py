@@ -63,9 +63,9 @@ class Drive:
         if abs(angleLimelight) < error:
             pass
         elif angleLimelight < -error:
-            self.drive.tankDrive(-0.5, -0.5)
+            self.drive.tankDrive(-0.75, -0.75)
         elif angleLimelight > error:
-            self.drive.tankDrive(0.5, 0.5)
+            self.drive.tankDrive(0.75, 0.75)
         else:
             pass
 

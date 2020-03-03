@@ -84,13 +84,16 @@ class Dashboard:
 
     def limelight(self, value):
         if value == 'tx':
-            return self.limelightDash.getNumber('tx', None)
+            return self.limelightDash.getNumber('tx', 0)
         elif value == 'ty':
-            return self.limelightDash.getNumber('ty', None)
+            return self.limelightDash.getNumber('ty', 0)
 
 
     def ballsObtained(self, value):
         self.dashboard.putNumber("Balls Obtained", value)
+
+    # def colorSensor(self, value):
+    #     self.dashboard.putNumber("Color Sensor", value)
 
 
     def limelightHorizontalAngle(self, angle):

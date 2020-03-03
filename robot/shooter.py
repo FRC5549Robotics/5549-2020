@@ -107,14 +107,18 @@ class Shooter:
 
     def setShooterRPM(self, motors, setpoint):
         # conversion factor to account for incorrect RPM
-        conversionFactor = 3.3
+        conversionFactor = 3.25
         setpoint = setpoint * conversionFactor
-        if motors =='Top':
-            self.PIDShooterTopRPM = (self.PIDShooterTop.calculate(self.getShooterRPM('Top'), setpoint) / 1000)
-            return self.PIDShooterTopRPM
+        if motors == 'Top':
+            self.topMotors.set(self.PIDShooterTop.calculate(self.getShooterRPM('Top'), setpoint) / 1000)
 
         elif motors == 'Bottom':
-            self.PIDShooterBottomRPM = self.bottomMotors.set((self.PIDShooterBottom.calculate(self.getShooterRPM('Bottom'), setpoint)) / 1000)
+            self.bottomMotors.set(self.PIDShooterBottom.calculate(self.getShooterRPM('Bottom'), setpoint) / 1000)
+
+        elif motors == 'Both':
+            self.topMotors.set(self.PIDShooterTop.calculate(self.getShooterRPM('Top'), setpoint) / 1000)
+            # self.bottomMotors.set((self.PIDShooterBottom.calculate(self.getShooterRPM('Bottom'), setpoint)) / 1000)
+            self.bottomMotors.set(self.PIDShooterBottom.calculate(self.getShooterRPM('Bottom'), setpoint) / 2000)
 
         elif motors == 'Stop':
             self.topMotors.stopMotor()
