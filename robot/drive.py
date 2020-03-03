@@ -40,22 +40,46 @@ class Drive:
 
         """ PID """
         # PID
-        self.PIDDrive = PIDController(0.1, 0.0, 0.0)
-        self.PIDDrive.setTolerance(100)
+        # self.PIDDrive = PIDController(0.1, 0.0, 0.0)
+        # self.PIDDrive.setTolerance(100)
+        self.setpoint = 0
+        self.kP = 0.1
+        self.kI = 0.0
+        self.kD = 0
+
+        self.integral = 0
+        self.previousError = 0
+
+    def setSetpoint(self, setpoint):
+        self.setpoint = setpoint
 
 
-    def setPID(self, kP, kI, kD):
-        self.PIDDrive.setPID(kP, kI, kD)
+    def PID(self):
+        if self.getGearSolenoid() == 2:
+            self.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+        self.error = self.setpoint - (self.navx.getAngle() % 360)
+        self.integral = self.integral + (self.error * .02)
+        self.derivative = (self.error - self.previousError) / 0.02
+        if abs(self.setpoint - (self.navx.getAngle() % 360)) > 180:
+            self.turnRight = True
+        elif abs(self.setpoint - (self.navx.getAngle() % 360)) < 180:
+            self.turnRight = False
+        self.rcw = self.kP * self.error + self.kI * self.integral + self.kD * self.derivative
+        self.rcw = self.rcw * 0.5
 
+    def execute(self):
+        self.PID()
+        if self.turnRight is True:
+            self.drive.tankDrive(self.rcw, self.rcw)
+        elif self.turnRight is False:
+            self.drive.tankDrive(-self.rcw, -self.rcw)
 
     def getGearSolenoid(self):
         return self.gearSolenoid.get()
 
-
     def turnToAngle(self, angleNavx, angleLimelight):
         # turn robot to specified angle values using navx
         pass
-
 
     def turnToTarget(self, angleLimelight):
         # turn robot to limelight target
@@ -69,7 +93,6 @@ class Drive:
         else:
             pass
 
-
     def changeGear(self, buttonStatus):
         # switches gear mode
         if buttonStatus is True:
@@ -79,14 +102,13 @@ class Drive:
             # low gear
             self.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
 
-
     def tankDrive(self, leftJoystickAxis, rightJoystickAxis):
         # tank drive at set scaling
         scaling = 1
         self.drive.tankDrive(-leftJoystickAxis * scaling, rightJoystickAxis * scaling, True)
 
-
     def arcadeDrive(self, rightJoystickAxis, rotateAxis):
         # arcade drive at set scaling
         scaling = 1
         self.drive.arcadeDrive(rotateAxis, -rightJoystickAxis * scaling, True)
+

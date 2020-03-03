@@ -15,7 +15,7 @@ class Intake:
 
     def run(self, state):
         # run indexer forward
-        speed = 0.75
+        speed = 1
         if state == 'Forward':
             self.intakeMotor.set(speed)
         elif state == 'Reverse':

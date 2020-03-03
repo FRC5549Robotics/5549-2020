@@ -92,8 +92,8 @@ class Dashboard:
     def ballsObtained(self, value):
         self.dashboard.putNumber("Balls Obtained", value)
 
-    # def colorSensor(self, value):
-    #     self.dashboard.putNumber("Color Sensor", value)
+    def colorSensor(self, value):
+        self.dashboard.putNumber("Color Sensor", value)
 
 
     def limelightHorizontalAngle(self, angle):

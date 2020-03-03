@@ -67,15 +67,15 @@ class Manticore(wpilib.TimedRobot):
         # button for autoaim
         self.turnButtonStatus = self.xbox.getRawButton(6)
 
-        # # color sensor
-        # self.colorSensor = ColorSensorV3(port=wpilib.I2C.Port())
+        # color sensor
+        i2cPort = wpilib.I2C.Port.kOnboard
+        self.colorSensor = ColorSensorV3(i2cPort)
 
         """ Pneumatics """
         # pneumatic compressor
         self.compressor = wpilib.Compressor(0)
         self.compressor.setClosedLoopControl(True)
         self.compressor.start()
-
 
         """ Shooter """
         self.shooter.reset('Both')
@@ -87,6 +87,9 @@ class Manticore(wpilib.TimedRobot):
         self.ballsInPossession = 0
         self.limitSwitchTriggered = False
 
+        """ NavX """
+        self.drive.navx.reset()
+
     def autonomousInit(self):
         pass
 
@@ -94,7 +97,8 @@ class Manticore(wpilib.TimedRobot):
         pass
 
     def teleopInit(self):
-        pass
+        self.drive.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+        self.drive.navx.reset()
 
     def teleopPeriodic(self):
         """ PIDs """
@@ -105,7 +109,7 @@ class Manticore(wpilib.TimedRobot):
 
         # drive PID
         [self.drivekP, self.drivekI, self.drivekD] = self.dashboard.getPID('Drive')
-        self.drive.setPID(self.drivekP, self.drivekI, self.drivekD)
+        # self.drive.setPID(self.drivekP, self.drivekI, self.drivekD)
 
         """ Updating Dashboard Values """
         # limelight
@@ -125,9 +129,11 @@ class Manticore(wpilib.TimedRobot):
 
         # color sensor
         # self.colorSensorColor = self.colorSensor.getColor()
+        # self.dashboard.colorSensor(self.colorSensorColor)
 
         # proximity sensor
-
+        self.colorSensorProximity = self.colorSensor.getProximity()
+        self.dashboard.colorSensor(self.colorSensorProximity)
 
         """ Updating Button and Joystick Values"""
         # joystick values
@@ -180,12 +186,10 @@ class Manticore(wpilib.TimedRobot):
             self.shooter.setShooterRPM('Both', self.targetRPM)
             self.shooterRPM = (abs(self.shooter.getShooterRPM('Top')))
             self.ballsInPossession = 0
-            if self.shooterRPM >= (self.targetRPM - 100):
-                if self.setpointReached is False:
-                    self.setpointReached = True
-                    self.intake.run('Stop')
-                    self.indexer.run('Forward')
-                    self.semicircle.run('Forward')
+            if self.shooterRPM >= (self.targetRPM - 100) and self.setpointReached is False:
+                self.setpointReached = True
+            else:
+                self.setpointReached = False
 
         else:
             self.shooter.setShooterRPM('Stop', 0)
@@ -193,7 +197,7 @@ class Manticore(wpilib.TimedRobot):
         # send RPM of shooter
         self.dashboard.shooterRPMStatus(self.shooter.getShooterRPM('Top'), self.shooter.getShooterRPM('Bottom'))
 
-        """ Intake, Indexer, and Semicrcle"""
+        """ Intake, Indexer, and Semicircle """
         # checks for amount of balls in semicircle
         if self.limitSwitch.get() is False and self.limitSwitchTriggered is False:
             self.ballsInPossession += 1
@@ -210,11 +214,26 @@ class Manticore(wpilib.TimedRobot):
             self.indexer.run('Stop')
             self.semicircle.run('Stop')
 
-        elif self.dpad == 180 and self.ballsInPossession < 3:
-            # runs intake, indexer, and semicircle if there are less than three balls in the semicircle
+        elif self.dpad == 180 and self.ballsInPossession == 0 and self.colorSensorProximity < 300:
+            self.intake.run('Forward')
+            self.indexer.run('Forward')
+            self.semicircle.run('Stop')
+
+        elif self.dpad == 180 and self.colorSensorProximity >= 300:
             self.intake.run('Forward')
             self.indexer.run('Forward')
             self.semicircle.run('Forward')
+
+        elif self.dpad == 180 and self.colorSensorProximity < 300:
+            self.intake.run('Forward')
+            self.indexer.run('Forward')
+            self.semicircle.run('Stop')
+
+        # elif self.dpad == 180 and self.ballsInPossession < 3:
+        #     # runs intake, indexer, and semicircle if there are less than three balls in the semicircle
+        #     self.intake.run('Forward')
+        #     self.indexer.run('Forward')
+        #     self.semicircle.run('Forward')
 
         elif self.dpad == 180 and self.ballsInPossession >= 3:
             # runs only intake if there are three or more balls in the semicircle
@@ -222,23 +241,22 @@ class Manticore(wpilib.TimedRobot):
             self.indexer.run('Stop')
             self.semicircle.run('Stop')
 
-        # elif self.setpointReached is True:
-        #     self.intake.run('Stop')
-        #     self.indexer.run('Forward')
-        #     self.semicircle.run('Forward')
+        elif self.setpointReached is True:
+            self.intake.run('Forward')
+            self.indexer.run('Forward')
+            self.semicircle.run('Forward')
 
         else:
             self.intake.run('Stop')
             self.indexer.run('Stop')
             self.semicircle.run('Stop')
 
-
         """ Auto Turn w/ NavX """
         if self.autoTurnButton is True:
-            self.drive.turnToTarget(self.tx)
-
+            # self.drive.turnToTarget(self.tx)
+            self.drive.setSetpoint(60)
+            self.drive.execute()
 
 
 if __name__ == '__main__':
-    ''' running the entire robot program '''
     wpilib.run(Manticore)
