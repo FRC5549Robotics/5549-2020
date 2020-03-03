@@ -58,10 +58,10 @@ class Shooter:
         ]
 
     def setSetpoint(self, PID, setpoint)
-    if PID == 'Top':
-        self.setpointTop = setpoint
-    elif PID == 'Bottom':
-        self.setpointBottom = setpoint
+        if PID == 'Top':
+            self.setpointTop = setpoint
+        elif PID == 'Bottom':
+            self.setpointBottom = setpoint
 
     def convertVelocityToRPM(velocity):
         """ This method will take in velocity and convert the velocity into rotations per minute
