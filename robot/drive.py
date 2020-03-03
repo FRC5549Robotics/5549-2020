@@ -37,14 +37,13 @@ class Drive:
         self.navx = navx.AHRS.create_spi()
         self.navx.reset()
 
-
         """ PID """
         # PID
         # self.PIDDrive = PIDController(0.1, 0.0, 0.0)
         # self.PIDDrive.setTolerance(100)
         self.setpoint = 0
         self.kP = 0.1
-        self.kI = 0.0
+        self.kI = 0
         self.kD = 0
 
         self.integral = 0
@@ -53,6 +52,10 @@ class Drive:
     def setSetpoint(self, setpoint):
         self.setpoint = setpoint
 
+    def setPID(self, kP, kI, kD):
+        self.kP = kP
+        self.kI = kI
+        self.kP = kD
 
     def PID(self):
         if self.getGearSolenoid() == 2:

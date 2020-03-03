@@ -21,9 +21,9 @@ class Dashboard:
         NetworkTables.initialize(server='10.55.49.2')
 
         # shooter PID
-        self.dashboard.putNumber('Shooter kP', 1)
-        self.dashboard.putNumber('Shooter kI', 0)
-        self.dashboard.putNumber('Shooter kD', 0)
+        # self.dashboard.putNumber('Shooter kP', 1)
+        # self.dashboard.putNumber('Shooter kI', 0)
+        # self.dashboard.putNumber('Shooter kD', 0)
 
         # drive PID
         self.dashboard.putNumber('Drive kP', 1)
@@ -63,18 +63,18 @@ class Dashboard:
             self.dashboard.putString("Drive Status", "Arcade Drive")
 
 
-    def getPID(self, subsystem):
-        if subsystem == 'Drive':
-            self.DrivekP = self.dashboard.getNumber('Drive kP', 0)
-            self.DrivekI = self.dashboard.getNumber('Drive kI', 0)
-            self.DrivekD = self.dashboard.getNumber('Drive kD', 0)
-            return self.DrivekP, self.DrivekI, self.DrivekD
+    # def getPID(self, subsystem):
+    #     if subsystem == 'Drive':
+    #         self.DrivekP = self.dashboard.getNumber('Drive kP', 0)
+    #         self.DrivekI = self.dashboard.getNumber('Drive kI', 0)
+    #         self.DrivekD = self.dashboard.getNumber('Drive kD', 0)
+    #         return self.DrivekP, self.DrivekI, self.DrivekD
     
-        elif subsystem == 'Shooter':
-            self.shooterkP = self.dashboard.getNumber('Shooter kP', 0)
-            self.shooterkI = self.dashboard.getNumber('Shooter kI', 0)
-            self.shooterkD = self.dashboard.getNumber('Shooter kD', 0)
-            return self.shooterkP, self.shooterkI, self.shooterkD
+        # elif subsystem == 'Shooter':
+        #     self.shooterkP = self.dashboard.getNumber('Shooter kP', 0)
+        #     self.shooterkI = self.dashboard.getNumber('Shooter kI', 0)
+        #     self.shooterkD = self.dashboard.getNumber('Shooter kD', 0)
+        #     return self.shooterkP, self.shooterkI, self.shooterkD
 
 
     def shooterRPMStatus(self, TopRPM, BottomRPM):
@@ -105,7 +105,6 @@ class Dashboard:
 
     def navxAngle(self, angle):
         self.dashboard.putNumber("NavX Angle", angle)
-
 
     def distance(self, distance):
         if distance is not None:

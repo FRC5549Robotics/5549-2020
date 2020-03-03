@@ -14,6 +14,8 @@ class Indexer:
         self.flatIndexer = WPI_TalonSRX(12)
 
         # inverts indexer motors
+        self.verticalIndexerLeft.setInverted(True)
+        self.verticalIndexerRight.setInverted(True)
         self.flatIndexer.setInverted(True)
 
         # creates indexer motor group
