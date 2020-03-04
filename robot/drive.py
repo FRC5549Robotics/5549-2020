@@ -13,11 +13,11 @@ class Drive:
         # drive train motors
         self.frontLeftMotor = WPI_VictorSPX(1)
         self.frontRightMotor = WPI_VictorSPX(2)
-        self.rearRightEncoder = WPI_TalonSRX(3)
         self.rearLeftEncoder = WPI_TalonSRX(4)
+        self.rearRightEncoder = WPI_TalonSRX(3)
+
 
         # reverses direction of drive train motors
-        self.frontRightMotor.setInverted(True)
         self.rearRightEncoder.setInverted(True)
 
         # drive train motor groups
@@ -80,9 +80,24 @@ class Drive:
     def getGearSolenoid(self):
         return self.gearSolenoid.get()
 
-    def turnToAngle(self, angleNavx, angleLimelight):
-        # turn robot to specified angle values using navx
-        pass
+    def turnAngle(self, angle):
+        # # turn robot to specified angle values using navx
+        # rightEncoderValue = self.rearRightEncoder.getSelectedSensorPosition()
+        # rightSavedEncoderValue = rightEncoderValue
+        # leftEncoderValue = self.rearLeftEncoder.getSelectedSensorPosition()
+        # leftSavedEncoderValue = leftEncoderValue
+        # self.targetAngleEncoder = (4096 / 90) * angle
+        # if abs(rightEncoderValue - rightSavedEncoderValue) < self.targetAngleEncoder and abs(rightEncoderValue - leftEncoderValue) < self.targetAngleEncoder:
+        #     self.targetAngleReached = False
+        # else:
+        #     self.targetAngleReached = True
+        # if angle < 0 and self.targetAngleReached == False:
+        #     self.drive.tankDrive(0.5, 0.5)
+        # elif angle > 0 and self.targetAngleReached == False:
+        #     self.drive.tankDrive(-0.5, -0.5)
+        # else:
+        #     self.drive.tankDrive(-0.25, 0.25)
+        self.drive.tankDrive(0.25, 0.25)
 
     def turnToTarget(self, angleLimelight):
         # turn robot to limelight target
@@ -114,4 +129,6 @@ class Drive:
         # arcade drive at set scaling
         scaling = 1
         self.drive.arcadeDrive(rotateAxis, -rightJoystickAxis * scaling, True)
+
+
 

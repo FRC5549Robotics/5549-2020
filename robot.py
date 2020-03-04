@@ -81,7 +81,7 @@ class Manticore(wpilib.TimedRobot):
         self.compressor.start()
 
         """ Shooter """
-        self.shooter.reset('Both')
+        # self.shooter.reset('Both')
         self.setpointReached = False
 
 
@@ -114,6 +114,9 @@ class Manticore(wpilib.TimedRobot):
         self.drive.navx.reset()
 
     def teleopPeriodic(self):
+        self.shooter.setPID('Top')
+        self.shooter.setPID('Bottom')
+
         """ Updating Dashboard Values """
         # limelight
         self.tx = self.dashboard.limelight('tx')
@@ -138,6 +141,7 @@ class Manticore(wpilib.TimedRobot):
         # send RPM of shooter
         self.dashboard.shooterRPMStatus(self.shooter.getShooterRPM('Top'), self.shooter.getShooterRPM('Bottom'))
 
+        # self.shooter.setVarPID(self.dashboard.testValues('P'), self.dashboard.testValues('I'), self.dashboard.testValues('D'), self.dashboard.testValues('F'), 'Bottom')
 
         """ Updating Button and Joystick Values"""
         # joystick values
@@ -187,20 +191,26 @@ class Manticore(wpilib.TimedRobot):
 
         """ Shooter """
         # sets shooter at a certain RPM if the trigger is being pressed
-        self.targetRPM = 1700
-        self.setpointReached = False
+        self.shooter.setSetpoint('Top', self.dashboard.testValues('RPM Top'))
+        self.shooter.setSetpoint('Bottom', self.dashboard.testValues('RPM Bottom'))
         if self.shooterLaunch > 0.25:
-            self.shooter.setShooterRPM('Both', self.targetRPM)
-            self.shooter.setShooterRPM('Bottom', self.targetRPM + 1000)
+            self.shooter.execute('Top')
+            self.shooter.execute('Bottom')
+        # self.targetRPM = 1700
+        # self.setpointReached = False
+        # if self.shooterLaunch > 0.25:
+        #     self.shooter.setShooterRPM('Both', self.targetRPM)
+        #     self.shooter.setShooterRPM('Bottom', self.targetRPM + 1000)
             self.shooterRPMTop = (abs(self.shooter.getShooterRPM('Top')))
             self.shooterRPMBottom = (abs(self.shooter.getShooterRPM('Bottom')))
             self.ballsInPossession = 0
-            if self.shooterRPMTop >= (self.targetRPM - 25) and self.shooterRPMBottom >= (self.targetRPM + 975) and self.setpointReached is False:
-                self.setpointReached = True
-            else:
-                self.setpointReached = False
+            # if self.shooterRPMTop >= (self.targetRPM - 25) and self.shooterRPMBottom >= (self.targetRPM + 975) and self.setpointReached is False:
+            #     self.setpointReached = True
+            # else:
+            #     self.setpointReached = False
         else:
-            self.shooter.setShooterRPM('Stop', 0)
+            self.shooter.topMotors.set(0)
+            self.shooter.bottomMotors.set(0)
 
 
         """ Intake, Indexer, and Semicircle """
@@ -261,11 +271,14 @@ class Manticore(wpilib.TimedRobot):
             self.semicircle.run('Stop')
 
         """ Auto Turn w/ NavX """
-        if self.autoTurnButton is True:
+        if self.xbox.getRawButton(2) is True:
             # self.drive.turnToTarget(self.tx)
-            self.targetAngle = (abs(self.drive.navx.getAngle()) % 360) + self.tx
-            self.drive.setSetpoint(self.targetAngle)
-            self.drive.execute()
+            # self.targetAngle = (abs(self.drive.navx.getAngle()) % 360) + self.tx
+            # self.drive.setSetpoint(self.targetAngle)
+            # self.drive.execute()
+            self.drive.turnAngle(90)
+
+        # self.dashboard.encoderAngle(self.drive.targetAngleEncoder)
 
 
 if __name__ == '__main__':

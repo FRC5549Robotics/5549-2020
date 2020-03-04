@@ -26,18 +26,20 @@ class Shooter:
         self.bottomMotors = wpilib.SpeedControllerGroup(self.bottomShooterEncoder, self.bottomShooterMotor)
 
         # top PID
-        self.kPTop = 0.1
-        self.kITop = 0.01
-        self.kDTop = 0.00
+        self.kPTop = 0.3
+        self.kITop = 0.018
+        self.kDTop = 0
+        self.kFTop = 1.30
 
         self.integralTop = 0
         self.previousErrorTop = 0
         self.setpointTop = 0
 
         # bottom PID
-        self.kPBottom = 0.1
+        self.kPBottom = 0.2
         self.kIBottom = 0.01
-        self.kDBottom = 0.00
+        self.kDBottom = 0.0
+        self.kFBottom = 0.477
 
         self.integralBottom = 0
         self.previousErrorBottom = 0
@@ -89,44 +91,51 @@ class Shooter:
             bottomShooterRPM = Shooter.convertVelocityToRPM(bottomEncoderVelocity)
             return bottomShooterRPM
 
-    def setSetpoint(self, PID, setpoint)
+    def setSetpoint(self, PID, setpoint):
         if PID == 'Top':
             self.setpointTop = setpoint
         elif PID == 'Bottom':
             self.setpointBottom = setpoint
 
-    def setPID(self, PID, setpoint, encoder)
+    def setPID(self, PID):
         if PID == 'Top':
             errorTop = self.setpointTop - self.getShooterRPM('Top')
             self.integralTop = self.integralTop + errorTop
+            if self.integralTop > 4400:
+                self.integralTop = 4400
             derivative = errorTop - self.previousErrorTop
-            self.rcwTop = (self.kPTop * errorTop) + (self.kITop * self.integralTop) + (self.kDTop * derivative)
+            self.rcwTop = (self.kPTop * errorTop) + (self.kITop * self.integralTop) + (self.kDTop * derivative) + (self.kFTop * self.setpointTop)
             self.PIDTopOutput = self.rcwTop / 4400
             self.previousErrorTop = errorTop
         elif PID == 'Bottom':
             errorBottom = self.setpointBottom - self.getShooterRPM('Bottom')
             self.integralBottom = self.integralBottom + errorBottom
+            if self.integralBottom > 4400:
+                self.integralBottom = 4400
             derivative = errorBottom - self.previousErrorBottom
-            self.rcwBottom = (self.kPBottom * errorBottom) + (self.kIBottom * self.integralBottom) + (self.kDBottom * derivative)
+            self.rcwBottom = (self.kPBottom * errorBottom) + (self.kIBottom * self.integralBottom) + (self.kDBottom * derivative) + (self.kFBottom * self.setpointBottom)
             self.PIDBottomOutput = self.rcwBottom / 4400
             self.previousErrorBottom = errorBottom
         
-    def execute(self, PID)
+    def execute(self, PID):
         if PID == 'Top':
             self.setPID('Top')
             self.topMotors.set(self.PIDTopOutput)
-        elif PID = 'Bottom':
+        elif PID == 'Bottom':
             self.setPID('Bottom')
             self.bottomMotors.set(self.PIDBottomOutput)
 
-    # def setPID(self, kP, kI, kD, motor):
-    #     if motor == 'Top':
-    #         self.PIDShooterTop.setPID(kP, kI, kD)
-    #     if motor == 'Bottom':
-    #         self.PIDShooterBottom.setPID(kP, kI, kD)
-    #     if motor == 'Both':
-    #         self.PIDShooterTop.setPID(kP, kI, kD)
-    #         self.PIDShooterBottom.setPID(kP, kI, kD)
+    def setVarPID(self, kP, kI, kD, kF, motor):
+        if motor == 'Top':
+            self.kPTop = kP
+            self.kITop = kI
+            self.kDTop = kD
+            self.kFTop = kF
+        if motor == 'Bottom':
+            self.kPBottom = kP
+            self.kIBottom = kI
+            self.kDBottom = kD
+            self.kFBottom = kF
 
     # def reset(self, motor):
     #     # resets shooter encoder and PID
