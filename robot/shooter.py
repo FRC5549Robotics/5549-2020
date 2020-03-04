@@ -57,12 +57,6 @@ class Shooter:
             [30, 15]
         ]
 
-    def setSetpoint(self, PID, setpoint)
-        if PID == 'Top':
-            self.setpointTop = setpoint
-        elif PID == 'Bottom':
-            self.setpointBottom = setpoint
-
     def convertVelocityToRPM(velocity):
         """ This method will take in velocity and convert the velocity into rotations per minute
 
@@ -95,19 +89,27 @@ class Shooter:
             bottomShooterRPM = Shooter.convertVelocityToRPM(bottomEncoderVelocity)
             return bottomShooterRPM
 
-    def setPID(self, PID)
+    def setSetpoint(self, PID, setpoint)
+        if PID == 'Top':
+            self.setpointTop = setpoint
+        elif PID == 'Bottom':
+            self.setpointBottom = setpoint
+
+    def setPID(self, PID, setpoint, encoder)
         if PID == 'Top':
             errorTop = self.setpointTop - self.getShooterRPM('Top')
             self.integralTop = self.integralTop + errorTop
             derivative = errorTop - self.previousErrorTop
             self.rcwTop = (self.kPTop * errorTop) + (self.kITop * self.integralTop) + (self.kDTop * derivative)
             self.PIDTopOutput = self.rcwTop / 4400
+            self.previousErrorTop = errorTop
         elif PID == 'Bottom':
             errorBottom = self.setpointBottom - self.getShooterRPM('Bottom')
             self.integralBottom = self.integralBottom + errorBottom
             derivative = errorBottom - self.previousErrorBottom
             self.rcwBottom = (self.kPBottom * errorBottom) + (self.kIBottom * self.integralBottom) + (self.kDBottom * derivative)
             self.PIDBottomOutput = self.rcwBottom / 4400
+            self.previousErrorBottom = errorBottom
         
     def execute(self, PID)
         if PID == 'Top':
