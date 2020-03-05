@@ -103,9 +103,9 @@ class Drive:
 
         if driveTrainEncoderValue <= self.targetAngleEncoder:
             if angle > 0:
-                self.drive.tankDrive(0.5, 0.5)
+                self.drive.tankDrive(1, 1)
             if angle < 0:
-                self.drive.tankDrive(-0.5, -0.5)
+                self.drive.tankDrive(-1, -1)
             self.resetAngle = False
         elif driveTrainEncoderValue >= (self.targetAngleEncoder + 1024):
             self.resetAngle = True
@@ -113,19 +113,17 @@ class Drive:
             self.leftDrive.stopMotor()
             self.rightDrive.stopMotor()
 
-
     def turnToTarget(self, angleLimelight):
         # turn robot to limelight target
-        error = 2
-        if abs(angleLimelight) < error:
-            pass
-        elif angleLimelight < -error:
-            self.drive.tankDrive(-0.5, -0.5)
-        elif angleLimelight > error:
-            self.drive.tankDrive(0.5, 0.5)
-        else:
-            pass
-
+        # error = 2
+        # if angleLimelight < -error:
+        #     self.drive.tankDrive(-0.75, -0.75)
+        # elif angleLimelight > error:
+        #     self.drive.tankDrive(0.75, 0.75)
+        if abs(angleLimelight) >= 2:  # just proportional smoothing
+            nspeed = angleLimelight / 35
+            self.drive.tankDrive(nspeed+0.2, nspeed+0.2)
+        return
 
     def changeGear(self, buttonStatus):
         # switches gear mode
