@@ -19,6 +19,7 @@ class Drive:
 
         # reverses direction of drive train motors
         self.rearRightEncoder.setInverted(True)
+        self.frontRightMotor.setInverted(True)
 
         # drive train motor groups
         self.leftDrive = wpilib.SpeedControllerGroup(self.frontLeftMotor, self.rearLeftEncoder)
@@ -48,6 +49,12 @@ class Drive:
 
         self.integral = 0
         self.previousError = 0
+
+        self.resetAngle = True
+
+    def reset(self):
+        self.rearLeftEncoder.setSelectedSensorPosition(0)
+        self.rearRightEncoder.setSelectedSensorPosition(0)
 
     def setSetpoint(self, setpoint):
         self.setpoint = setpoint
@@ -81,23 +88,27 @@ class Drive:
         return self.gearSolenoid.get()
 
     def turnAngle(self, angle):
-        # # turn robot to specified angle values using navx
-        # rightEncoderValue = self.rearRightEncoder.getSelectedSensorPosition()
-        # rightSavedEncoderValue = rightEncoderValue
-        # leftEncoderValue = self.rearLeftEncoder.getSelectedSensorPosition()
-        # leftSavedEncoderValue = leftEncoderValue
-        # self.targetAngleEncoder = (4096 / 90) * angle
-        # if abs(rightEncoderValue - rightSavedEncoderValue) < self.targetAngleEncoder and abs(rightEncoderValue - leftEncoderValue) < self.targetAngleEncoder:
-        #     self.targetAngleReached = False
-        # else:
-        #     self.targetAngleReached = True
-        # if angle < 0 and self.targetAngleReached == False:
-        #     self.drive.tankDrive(0.5, 0.5)
-        # elif angle > 0 and self.targetAngleReached == False:
-        #     self.drive.tankDrive(-0.5, -0.5)
-        # else:
-        #     self.drive.tankDrive(-0.25, 0.25)
-        self.drive.tankDrive(0.25, 0.25)
+        # turn robot to specified angle values using navx
+        leftEncoderValue = abs(self.rearLeftEncoder.getSelectedSensorPosition())
+        rightEncoderValue = abs(self.rearRightEncoder.getSelectedSensorPosition())
+        driveTrainEncoderValue = abs(rightEncoderValue + leftEncoderValue) / 2
+        self.targetAngleEncoder = abs((4096 / 90) * angle)
+        if angle > 0:
+            self.targetAngleEncoder = self.targetAngleEncoder + 1024
+        elif angle < 0:
+            self.targetAngleEncoder = self.targetAngleEncoder + 256
+
+        if driveTrainEncoderValue <= self.targetAngleEncoder:
+            if angle > 0:
+                self.drive.tankDrive(0.5, 0.5)
+            if angle < 0:
+                self.drive.tankDrive(-0.5, -0.5)
+            self.resetAngle = False
+        elif driveTrainEncoderValue >= (self.targetAngleEncoder + 1024):
+            self.resetAngle = True
+        else:
+            self.leftDrive.stopMotor()
+            self.rightDrive.stopMotor()
 
     def turnToTarget(self, angleLimelight):
         # turn robot to limelight target

@@ -26,20 +26,20 @@ class Shooter:
         self.bottomMotors = wpilib.SpeedControllerGroup(self.bottomShooterEncoder, self.bottomShooterMotor)
 
         # top PID
-        self.kPTop = 0.3
-        self.kITop = 0.018
+        self.kPTop = 0
+        self.kITop = 0.0001
         self.kDTop = 0
-        self.kFTop = 1.30
+        self.kFTop = 1
 
         self.integralTop = 0
         self.previousErrorTop = 0
         self.setpointTop = 0
 
         # bottom PID
-        self.kPBottom = 0.2
-        self.kIBottom = 0.01
-        self.kDBottom = 0.0
-        self.kFBottom = 0.477
+        self.kPBottom = 0
+        self.kIBottom = 0.0001
+        self.kDBottom = 0
+        self.kFBottom = 0.88
 
         self.integralBottom = 0
         self.previousErrorBottom = 0
