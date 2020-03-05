@@ -13,9 +13,8 @@ class Drive:
         # drive train motors
         self.frontLeftMotor = WPI_VictorSPX(1)
         self.frontRightMotor = WPI_VictorSPX(2)
-        self.rearLeftEncoder = WPI_TalonSRX(4)
         self.rearRightEncoder = WPI_TalonSRX(3)
-
+        self.rearLeftEncoder = WPI_TalonSRX(4)
 
         # reverses direction of drive train motors
         self.rearRightEncoder.setInverted(True)
@@ -31,7 +30,7 @@ class Drive:
 
         """ Pneumatics """
         # drive pneumatics
-        self.gearSolenoid = wpilib.DoubleSolenoid(2, 3)    # check these numbers
+        self.gearSolenoid = wpilib.DoubleSolenoid(2, 3)
 
 
         """ NavX """
@@ -39,9 +38,6 @@ class Drive:
         self.navx.reset()
 
         """ PID """
-        # PID
-        # self.PIDDrive = PIDController(0.1, 0.0, 0.0)
-        # self.PIDDrive.setTolerance(100)
         self.setpoint = 0
         self.kP = 0.1
         self.kI = 0
@@ -52,17 +48,21 @@ class Drive:
 
         self.resetAngle = True
 
+
     def reset(self):
         self.rearLeftEncoder.setSelectedSensorPosition(0)
         self.rearRightEncoder.setSelectedSensorPosition(0)
 
+
     def setSetpoint(self, setpoint):
         self.setpoint = setpoint
+
 
     def setPID(self, kP, kI, kD):
         self.kP = kP
         self.kI = kI
         self.kP = kD
+
 
     def PID(self):
         if self.getGearSolenoid() == 2:
@@ -74,8 +74,9 @@ class Drive:
             self.turnRight = True
         elif abs(self.setpoint - (self.navx.getAngle() % 360)) < 180:
             self.turnRight = False
-        self.rcw = self.kP * self.error + self.kI * self.integral + self.kD * self.derivative
+        self.rcw = (self.kP * self.error) + (self.kI * self.integral) + (self.kD * self.derivative)
         self.rcw = self.rcw * 0.5
+
 
     def execute(self):
         self.PID()
@@ -84,8 +85,10 @@ class Drive:
         elif self.turnRight is False:
             self.drive.tankDrive(-self.rcw, -self.rcw)
 
+
     def getGearSolenoid(self):
         return self.gearSolenoid.get()
+
 
     def turnAngle(self, angle):
         # turn robot to specified angle values using navx
@@ -110,17 +113,19 @@ class Drive:
             self.leftDrive.stopMotor()
             self.rightDrive.stopMotor()
 
+
     def turnToTarget(self, angleLimelight):
         # turn robot to limelight target
-        error = 4
+        error = 2
         if abs(angleLimelight) < error:
             pass
         elif angleLimelight < -error:
-            self.drive.tankDrive(-0.75, -0.75)
+            self.drive.tankDrive(-0.5, -0.5)
         elif angleLimelight > error:
-            self.drive.tankDrive(0.75, 0.75)
+            self.drive.tankDrive(0.5, 0.5)
         else:
             pass
+
 
     def changeGear(self, buttonStatus):
         # switches gear mode
@@ -131,15 +136,14 @@ class Drive:
             # low gear
             self.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
 
+
     def tankDrive(self, leftJoystickAxis, rightJoystickAxis):
         # tank drive at set scaling
         scaling = 1
         self.drive.tankDrive(-leftJoystickAxis * scaling, rightJoystickAxis * scaling, True)
 
+
     def arcadeDrive(self, rightJoystickAxis, rotateAxis):
         # arcade drive at set scaling
         scaling = 1
         self.drive.arcadeDrive(rotateAxis, -rightJoystickAxis * scaling, True)
-
-
-

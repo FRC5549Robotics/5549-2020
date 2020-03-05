@@ -59,6 +59,7 @@ class Shooter:
             [30, 15]
         ]
 
+
     def convertVelocityToRPM(velocity):
         """ This method will take in velocity and convert the velocity into rotations per minute
 
@@ -91,11 +92,13 @@ class Shooter:
             bottomShooterRPM = Shooter.convertVelocityToRPM(bottomEncoderVelocity)
             return bottomShooterRPM
 
+
     def setSetpoint(self, PID, setpoint):
         if PID == 'Top':
             self.setpointTop = setpoint
         elif PID == 'Bottom':
             self.setpointBottom = setpoint
+
 
     def setPID(self, PID):
         if PID == 'Top':
@@ -117,6 +120,7 @@ class Shooter:
             self.PIDBottomOutput = self.rcwBottom / 4400
             self.previousErrorBottom = errorBottom
         
+
     def execute(self, PID):
         if PID == 'Top':
             self.setPID('Top')
@@ -124,6 +128,7 @@ class Shooter:
         elif PID == 'Bottom':
             self.setPID('Bottom')
             self.bottomMotors.set(self.PIDBottomOutput)
+
 
     def setVarPID(self, kP, kI, kD, kF, motor):
         if motor == 'Top':
@@ -137,6 +142,7 @@ class Shooter:
             self.kDBottom = kD
             self.kFBottom = kF
 
+
     # def reset(self, motor):
     #     # resets shooter encoder and PID
     #     self.topShooterEncoder.setSelectedSensorPosition(0)
@@ -148,6 +154,7 @@ class Shooter:
     #     if motor == 'Both':
     #         self.PIDShooterTop.reset()
     #         self.PIDShooterBottom.reset()
+
 
     # def setShooterRPM(self, motors, setpoint):
     #     # conversion factor to account for incorrect RPM
@@ -174,23 +181,23 @@ class Shooter:
     #     self.bottomMotors.set(bottomPower)
 
 
-    def shootPreDefinedLengths(self, listIndexNumber):
-        """ This method will set the rpm of the motors
-        The top rpm and bottom rpm will be set based on the stored ranges
-        We will get these values from the ranges if the index of the ranges equals the inputed number
+    # def shootPreDefinedLengths(self, listIndexNumber):
+    #     """ This method will set the rpm of the motors
+    #     The top rpm and bottom rpm will be set based on the stored ranges
+    #     We will get these values from the ranges if the index of the ranges equals the inputed number
 
-        :param listIndexNumber:
-        :type listIndexNumber: int
+    #     :param listIndexNumber:
+    #     :type listIndexNumber: int
 
-        :return void:
-        """
+    #     :return void:
+    #     """
 
-        # set the shooter rpms to the extracted values
-        # self.setTopShooterRPM(self.rangesForShooting[listIndexNumber][1])
-        # self.setBottomShooterRPM(self.rangesForShooting[listIndexNumber][2])
-        pass
+    #     # set the shooter rpms to the extracted values
+    #     # self.setTopShooterRPM(self.rangesForShooting[listIndexNumber][1])
+    #     # self.setBottomShooterRPM(self.rangesForShooting[listIndexNumber][2])
+    #     pass
 
 
-    def shootAutonomous(self, distance):
-        # automatically shoot balls given distance
-        pass
+    # def shootAutonomous(self, distance):
+    #     # automatically shoot balls given distance
+    #     pass

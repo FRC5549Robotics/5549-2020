@@ -6,9 +6,6 @@ import logging
 
 class Dashboard:
     def __init__(self):
-        # adding functions
-        # self.shooter = Shooter()
-
         """ Initializing Dashboard """
         # logging
         logging.basicConfig(level=logging.DEBUG)
@@ -20,10 +17,9 @@ class Dashboard:
         # initializing dashboard
         NetworkTables.initialize(server='10.55.49.2')
 
+        """ Adding necessary values """
+
         # shooter PID
-        # self.dashboard.putNumber('Shooter kP', 1)
-        # self.dashboard.putNumber('Shooter kI', 0)
-        # self.dashboard.putNumber('Shooter kD', 0)
         self.dashboard.putNumber('Shooter P Top', 0)
         self.dashboard.putNumber('Shooter I Top', 0)
         self.dashboard.putNumber('Shooter D Top', 0)
@@ -76,13 +72,60 @@ class Dashboard:
             self.dashboard.putString("Drive Status", "Arcade Drive")
 
 
+    def shooterRPMStatus(self, TopRPM, BottomRPM):
+        self.dashboard.putNumber("Top Shooter RPM", TopRPM)
+        self.dashboard.putNumber("Bottom Shooter RPM", BottomRPM)
+
+
+    def limelight(self, value):
+        if value == 'tx':
+            return self.limelightDash.getNumber('tx', 0)
+        elif value == 'ty':
+            return self.limelightDash.getNumber('ty', 0)
+
+
+    def ballsObtained(self, value):
+        self.dashboard.putNumber("Balls Obtained", value)
+
+
+    def colorSensor(self, value):
+        self.dashboard.putNumber("Color Sensor", value)
+
+
+    def limelightHorizontalAngle(self, angle):
+        if angle == None:
+            pass
+        else:
+            self.dashboard.putNumber("Limelight tx", angle)
+
+
+    def navxAngle(self, angle):
+        self.dashboard.putNumber("NavX Angle", angle)
+
+
+    def distance(self, distance):
+        if distance is not None:
+            self.dashboard.putNumber("Distance", distance)
+        else:
+            pass
+
+
+    def encoderAngle(self, angle):
+        self.dashboard.putNumber("Encoder Angle", angle)
+
+
+    def shooterPID(self, output1, output2):
+        self.dashboard.putNumber("Power 1", output1)
+        self.dashboard.putNumber("Power 2", output2)
+
+
     def testValues(self, var, value):
-    #     if subsystem == 'Drive':
-    #         self.DrivekP = self.dashboard.getNumber('Drive kP', 0)
-    #         self.DrivekI = self.dashboard.getNumber('Drive kI', 0)
-    #         self.DrivekD = self.dashboard.getNumber('Drive kD', 0)
-    #         return self.DrivekP, self.DrivekI, self.DrivekD
-    
+        # if subsystem == 'Drive':
+        #     self.DrivekP = self.dashboard.getNumber('Drive kP', 0)
+        #     self.DrivekI = self.dashboard.getNumber('Drive kI', 0)
+        #     self.DrivekD = self.dashboard.getNumber('Drive kD', 0)
+        #     return self.DrivekP, self.DrivekI, self.DrivekD
+
         # elif subsystem == 'Shooter':
         #     self.shooterkP = self.dashboard.getNumber('Shooter kP', 0)
         #     self.shooterkI = self.dashboard.getNumber('Shooter kI', 0)
@@ -114,45 +157,3 @@ class Dashboard:
             self.dashboard.putNumber("Drive Train Right Encoder", value)
         if var == 'Drive Train Encoder':
             self.dashboard.putNumber("Drive Train Encoder", value)
-
-    def shooterRPMStatus(self, TopRPM, BottomRPM):
-        self.dashboard.putNumber("Top Shooter RPM", TopRPM)
-        self.dashboard.putNumber("Bottom Shooter RPM", BottomRPM)
-
-
-    def limelight(self, value):
-        if value == 'tx':
-            return self.limelightDash.getNumber('tx', 0)
-        elif value == 'ty':
-            return self.limelightDash.getNumber('ty', 0)
-
-
-    def ballsObtained(self, value):
-        self.dashboard.putNumber("Balls Obtained", value)
-
-    def colorSensor(self, value):
-        self.dashboard.putNumber("Color Sensor", value)
-
-
-    def limelightHorizontalAngle(self, angle):
-        if angle == None:
-            pass
-        else:
-            self.dashboard.putNumber("Limelight tx", angle)
-
-
-    def navxAngle(self, angle):
-        self.dashboard.putNumber("NavX Angle", angle)
-
-    def distance(self, distance):
-        if distance is not None:
-            self.dashboard.putNumber("Distance", distance)
-        else:
-            pass
-
-    def encoderAngle(self, angle):
-        self.dashboard.putNumber("Encoder Angle", angle)
-
-    def shooterPID(self, output1, output2):
-        self.dashboard.putNumber("Power 1", output1)
-        self.dashboard.putNumber("Power 2", output2)
