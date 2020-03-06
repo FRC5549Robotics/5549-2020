@@ -1,11 +1,11 @@
 """ Semicircle Functions """
-# importing packages
 import wpilib
 from ctre import *
 
 
 class Semicircle:
     def __init__(self):
+        """ Semicircle """
         # semicircle motors
         self.semicircleMotor = WPI_TalonSRX(14)
 

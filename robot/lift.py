@@ -1,11 +1,11 @@
-""""" lift functions """
-# importing packages
+""" Lift Functions """
 import wpilib
 from ctre import *
 
 
 class Lift:
     def __init__(self):
+        """ Lift """
         # lift motor
         self.liftMotor = WPI_VictorSPX(13)
 
@@ -16,7 +16,7 @@ class Lift:
 
 
     def changeLift(self, liftButtonStatus):
-        # changes the position of the lift
+        """ Changes the position of the lift """
         if liftButtonStatus is True:
             # lift up
             self.liftSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
@@ -25,12 +25,8 @@ class Lift:
             self.liftSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
 
 
-    def getLiftSolenoid(self):
-        return self.liftSolenoid.get()
-
-
     def runMotor(self, runLift):
-        # runs motor if the left trigger button is being pressed
+        """ Runs lift motor """
         if runLift > 0.5:
             self.liftMotor.set(1)
         else:

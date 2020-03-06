@@ -1,17 +1,11 @@
 """ Shooter Functions """
-# importing packages
 import wpilib
 from ctre import *
 from wpilib.controller import PIDController
-# main shooter class
-from robot import Dashboard
 
 
 class Shooter:
     def __init__(self):
-        """ Functions """
-        self.dashboard = Dashboard()
-
         """ Shooter """
         # shooter motors and encoders
         self.topShooterEncoder = WPI_TalonSRX(5)
@@ -46,42 +40,17 @@ class Shooter:
         self.integralBottom = 0
         self.previousErrorBottom = 0
         self.setpointBottom = 0
-
-        # PID
-        # self.PIDShooterTop = PIDController(self.kP, self.kI, self.kD)
-        # self.PIDShooterTop.setTolerance(0)
-        # self.PIDShooterBottom = PIDController(self.kP, self.kI, self.kD)
-        # self.PIDShooterBottom.setTolerance(0)
-
-        # storage for the ranges that the robot can shoot from
-        # first number is the top rpm and second number is the bottom rpm
-        self.rangesForShooting = [
-            [50, 25],
-            [40, 20],
-            [30, 15]
-        ]
+        
 
     def convertVelocityToRPM(velocity):
-        """ This method will take in velocity and convert the velocity into rotations per minute
-
-        :param velocity:
-        :type velocity: float
-
-        :return rpm:
-        :rtype rpm: float
-        """
-
-        # convert velocity to rpm
+        """ This method will take in velocity and convert the velocity into rotations per minute """
         conversionFactor = 600 / 4096
         RPM = velocity * conversionFactor
         return RPM
 
-    def getShooterRPM(self, motors):
-        """ This method will get velocity return rpm of the top or bottom shooter speed controller group
 
-        :return rpm:
-        :rtype rpm: float
-        """
+    def getShooterRPM(self, motors):
+        """ This method will get velocity return rpm of the top or bottom shooter speed controller group """
         if motors == 'Top':
             topEncoderVelocity = self.topShooterEncoder.getSelectedSensorVelocity()
             topShooterRPM = Shooter.convertVelocityToRPM(topEncoderVelocity)
@@ -92,11 +61,28 @@ class Shooter:
             bottomShooterRPM = Shooter.convertVelocityToRPM(bottomEncoderVelocity)
             return bottomShooterRPM
 
+
     def setSetpoint(self, PID, setpoint):
+        """ Sets the setpoints of the top or bottom shooter motors """
         if PID == 'Top':
             self.setpointTop = setpoint
         elif PID == 'Bottom':
             self.setpointBottom = setpoint
+
+
+    def setVarPID(self, kP, kI, kD, kF, motor):
+        """ Sets the variables for PID to be set """
+        if motor == 'Top':
+            self.kPTop = kP
+            self.kITop = kI
+            self.kDTop = kD
+            self.kFTop = kF
+        if motor == 'Bottom':
+            self.kPBottom = kP
+            self.kIBottom = kI
+            self.kDBottom = kD
+            self.kFBottom = kF
+
 
     def setPID(self, PID):
         """ Method to set two different PIDs for top shooter and bottom shooter with a backspin on bottom shooter """
@@ -125,76 +111,10 @@ class Shooter:
             self.previousErrorBottom = errorBottom
 
     def execute(self, PID):
+        """ Executes the drive-train PID """
         if PID == 'Top':
             self.setPID('Top')
             self.topMotors.set(self.PIDTopOutput)
         elif PID == 'Bottom':
             self.setPID('Bottom')
             self.bottomMotors.set(self.PIDBottomOutput)
-
-    def setVarPID(self, kP, kI, kD, kF, motor):
-        if motor == 'Top':
-            self.kPTop = kP
-            self.kITop = kI
-            self.kDTop = kD
-            self.kFTop = kF
-        if motor == 'Bottom':
-            self.kPBottom = kP
-            self.kIBottom = kI
-            self.kDBottom = kD
-            self.kFBottom = kF
-
-    # def reset(self, motor):
-    #     # resets shooter encoder and PID
-    #     self.topShooterEncoder.setSelectedSensorPosition(0)
-    #     self.bottomShooterEncoder.setSelectedSensorPosition(0)
-    #     if motor == 'Top':
-    #         self.PIDShooterTop.reset()
-    #     if motor == 'Bottom':
-    #         self.PIDShooterBottom.reset()
-    #     if motor == 'Both':
-    #         self.PIDShooterTop.reset()
-    #         self.PIDShooterBottom.reset()
-
-    # def setShooterRPM(self, motors, setpoint):
-    #     # conversion factor to account for incorrect RPM
-    #     conversionFactor = 3.25
-    #     setpoint = setpoint * conversionFactor
-    #     if motors == 'Top':
-    #         self.topMotors.set(self.PIDShooterTop.calculate(self.getShooterRPM('Top'), setpoint) / 1000)
-
-    #     elif motors == 'Bottom':
-    #         self.bottomMotors.set(self.PIDShooterBottom.calculate(self.getShooterRPM('Bottom'), setpoint) / 1950)
-
-    #     elif motors == 'Both':
-    #         self.topMotors.set(self.PIDShooterTop.calculate(self.getShooterRPM('Top'), setpoint) / 1000)
-    #         # self.bottomMotors.set((self.PIDShooterBottom.calculate(self.getShooterRPM('Bottom'), setpoint)) / 1000)
-    #         self.bottomMotors.set(self.PIDShooterBottom.calculate(self.getShooterRPM('Bottom'), setpoint) / 1950)
-
-    #     elif motors == 'Stop':
-    #         self.topMotors.stopMotor()
-    #         self.bottomMotors.stopMotor()
-
-    # def shooterPower(self, topPower, bottomPower):
-    #     self.topMotors.set(topPower)
-    #     self.bottomMotors.set(bottomPower)
-
-    # def shootPreDefinedLengths(self, listIndexNumber):
-    #     """ This method will set the rpm of the motors
-    #     The top rpm and bottom rpm will be set based on the stored ranges
-    #     We will get these values from the ranges if the index of the ranges equals the inputed number
-
-    #     :param listIndexNumber:
-    #     :type listIndexNumber: int
-
-    #     :return void:
-    #     """
-
-    #     # set the shooter rpms to the extracted values
-    #     # self.setTopShooterRPM(self.rangesForShooting[listIndexNumber][1])
-    #     # self.setBottomShooterRPM(self.rangesForShooting[listIndexNumber][2])
-    #     pass
-
-    # def shootAutonomous(self, distance):
-    #     # automatically shoot balls given distance
-    #     pass
