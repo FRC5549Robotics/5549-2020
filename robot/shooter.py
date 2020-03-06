@@ -43,14 +43,23 @@ class Shooter:
         
 
     def convertVelocityToRPM(velocity):
-        """ This method will take in velocity and convert the velocity into rotations per minute """
+        """ This method will take in velocity and convert the velocity into rotations per minute
+
+        :param rawVelocity:
+        :type rawVelocity: float
+        :return rpm:
+        :rtype rpm: float
+        """
         conversionFactor = 600 / 4096
         RPM = velocity * conversionFactor
         return RPM
 
 
     def getShooterRPM(self, motors):
-        """ This method will get velocity return rpm of the top or bottom shooter speed controller group """
+        """ This method will get velocity return rpm of the top or bottom shooter speed controller group
+        :return rpm:
+        :rtype rpm: float
+        """
         if motors == 'Top':
             topEncoderVelocity = self.topShooterEncoder.getSelectedSensorVelocity()
             topShooterRPM = Shooter.convertVelocityToRPM(topEncoderVelocity)

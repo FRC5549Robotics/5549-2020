@@ -19,10 +19,10 @@ class Lift:
         """ Changes the position of the lift """
         if liftButtonStatus is True:
             # lift up
-            self.liftSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
+            self.liftSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
         elif liftButtonStatus is False:
             # lift down
-            self.liftSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+            self.liftSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
 
 
     def runMotor(self, runLift):

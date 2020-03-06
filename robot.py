@@ -226,10 +226,10 @@ class Manticore(wpilib.TimedRobot):
         self.dashboard.autoRPM(self.setpointReached)
 
         # turns limit switch on or off based on dashboard status
-        if self.dashboard.limitSwitchToggle is True:
-            self.limitSwitch.start()
-        elif self.dashboard.limitSwitchToggle is False:
-            self.limitSwitch.stop()
+        if self.dashboard.limitSwitchToggle() is True:
+            self.limitSwitchOverride = True
+        elif self.dashboard.limitSwitchToggle() is False:
+            self.limitSwitchOverride = False
 
         # set shooter PID
         # self.shooter.setVarPID(self.dashboard.getTestValues('P Top'), self.dashboard.getTestValues('I Top'), self.dashboard.getTestValues('D Top'), self.dashboard.getTestValues('F Top'), 'Top')
@@ -244,11 +244,11 @@ class Manticore(wpilib.TimedRobot):
         # self.dashboard.putDiagnosticValues('Drive Train Encoder', self.driveTrainEncoder)
 
         # sending lift state status to dashboard
-        self.dashboard.dashboardLiftStatus(self.lift.getLiftSolenoid())
+        self.dashboard.liftStatus(self.lift.liftSolenoid.get())
 
         """ Pneumatics """
         # compressor status
-        self.dashboard.dashboardCompressorStatus(self.compressor.enabled())
+        self.dashboard.compressorStatus(self.compressor.enabled())
 
         # shooter rpm
         self.shooterRPMTop = (abs(self.shooter.getShooterRPM('Top')))
@@ -279,7 +279,7 @@ class Manticore(wpilib.TimedRobot):
 
         """ Lift """
         # only runs lift if up
-        if self.lift.getLiftSolenoid() == 2:
+        if self.lift.liftSolenoid.get() == 1:
             self.lift.runMotor(self.xbox.getRawAxis(2))
 
         # changing lift state
@@ -356,15 +356,11 @@ class Manticore(wpilib.TimedRobot):
             self.semicircle.run('Stop')
 
         elif self.dpadBackwards is True:
-            if self.colorSensorProximity >= self.colorSensitivity:
+            if self.colorSensorProximity >= self.colorSensitivity and self.ballsInPossession < 3:
                 # runs if a ball is detected
                 self.intake.run('Forward')
                 self.indexer.run('Forward')
                 self.semicircle.run('Forward')
-                if self.ballsInPossession >= 3:
-                    self.intake.run('Forward')
-                    self.indexer.run('Stop')
-                    self.semicircle.run('Stop')
 
             elif self.colorSensorProximity < self.colorSensitivity and self.ballsInPossession < 3:
                 # runs if ball is not detected
@@ -374,9 +370,14 @@ class Manticore(wpilib.TimedRobot):
 
             elif self.ballsInPossession >= 3:
                 # runs intake only if there are three or more balls in the semicircle
-                self.intake.run('Forward')
-                self.indexer.run('Stop')
-                self.semicircle.run('Stop')
+                if self.limitSwitchOverride is False:
+                    self.intake.run('Forward')
+                    self.indexer.run('Stop')
+                    self.semicircle.run('Stop')
+                elif self.limitSwitchOverride is True:
+                    self.intake.run('Forward')
+                    self.indexer.run('Forward')
+                    self.semicircle.run('Forward')
 
         elif self.shooterRun is True and self.setpointReached is False:
             # runs while shooter is activated but not yet at target RPM
@@ -415,6 +416,7 @@ class Manticore(wpilib.TimedRobot):
             # self.targetAngle = (abs(self.drive.navx.getAngle()) % 360) + self.tx
             # self.drive.setSetpoint(self.targetAngle)
             # self.drive.execute()
+
 
 
 if __name__ == '__main__':
