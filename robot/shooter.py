@@ -9,9 +9,10 @@ from robot import Dashboard
 
 class Shooter:
     def __init__(self):
-        # assigning functions
+        """ Functions """
         self.dashboard = Dashboard()
 
+        """ Shooter """
         # shooter motors and encoders
         self.topShooterEncoder = WPI_TalonSRX(5)
         self.topShooterMotor = WPI_VictorSPX(6)
@@ -25,6 +26,7 @@ class Shooter:
         self.topMotors = wpilib.SpeedControllerGroup(self.topShooterEncoder, self.topShooterMotor)
         self.bottomMotors = wpilib.SpeedControllerGroup(self.bottomShooterEncoder, self.bottomShooterMotor)
 
+        """ Shooter PID """
         # top PID
         self.kPTop = 0.1    # 0.9
         self.kITop = 0.001  # 0.009
@@ -58,7 +60,6 @@ class Shooter:
             [40, 20],
             [30, 15]
         ]
-
 
     def convertVelocityToRPM(velocity):
         """ This method will take in velocity and convert the velocity into rotations per minute
@@ -102,22 +103,26 @@ class Shooter:
         if PID == 'Top':
             errorTop = self.setpointTop - self.getShooterRPM('Top')
             self.integralTop = self.integralTop + errorTop
+
             if self.integralTop > 4400:
                 self.integralTop = 4400
+
             derivative = errorTop - self.previousErrorTop
             self.rcwTop = (self.kPTop * errorTop) + (self.kITop * self.integralTop) + (self.kDTop * derivative) + (self.kFTop * self.setpointTop)
             self.PIDTopOutput = self.rcwTop / 4400
             self.previousErrorTop = errorTop
+
         elif PID == 'Bottom':
             errorBottom = abs(self.setpointBottom) - abs(self.getShooterRPM('Bottom'))
             self.integralBottom = self.integralBottom + errorBottom
+
             if self.integralBottom > 4400:
                 self.integralBottom = 4400
+
             derivative = errorBottom - self.previousErrorBottom
             self.rcwBottom = (self.kPBottom * errorBottom) + (self.kIBottom * self.integralBottom) + (self.kDBottom * derivative) + (self.kFBottom * self.setpointBottom)
             self.PIDBottomOutput = self.rcwBottom / 4400
             self.previousErrorBottom = errorBottom
-        
 
     def execute(self, PID):
         if PID == 'Top':
@@ -126,7 +131,6 @@ class Shooter:
         elif PID == 'Bottom':
             self.setPID('Bottom')
             self.bottomMotors.set(self.PIDBottomOutput)
-
 
     def setVarPID(self, kP, kI, kD, kF, motor):
         if motor == 'Top':
@@ -140,7 +144,6 @@ class Shooter:
             self.kDBottom = kD
             self.kFBottom = kF
 
-
     # def reset(self, motor):
     #     # resets shooter encoder and PID
     #     self.topShooterEncoder.setSelectedSensorPosition(0)
@@ -152,7 +155,6 @@ class Shooter:
     #     if motor == 'Both':
     #         self.PIDShooterTop.reset()
     #         self.PIDShooterBottom.reset()
-
 
     # def setShooterRPM(self, motors, setpoint):
     #     # conversion factor to account for incorrect RPM
@@ -173,11 +175,9 @@ class Shooter:
     #         self.topMotors.stopMotor()
     #         self.bottomMotors.stopMotor()
 
-
     # def shooterPower(self, topPower, bottomPower):
     #     self.topMotors.set(topPower)
     #     self.bottomMotors.set(bottomPower)
-
 
     # def shootPreDefinedLengths(self, listIndexNumber):
     #     """ This method will set the rpm of the motors
@@ -194,7 +194,6 @@ class Shooter:
     #     # self.setTopShooterRPM(self.rangesForShooting[listIndexNumber][1])
     #     # self.setBottomShooterRPM(self.rangesForShooting[listIndexNumber][2])
     #     pass
-
 
     # def shootAutonomous(self, distance):
     #     # automatically shoot balls given distance

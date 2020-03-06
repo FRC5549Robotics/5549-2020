@@ -1,4 +1,4 @@
-""" semicircle functions """
+""" Semicircle Functions """
 # importing packages
 import wpilib
 from ctre import *

@@ -1,4 +1,4 @@
-""" intake functions """
+""" Intake Functions """
 # importing packages
 import wpilib
 from ctre import *
@@ -14,7 +14,7 @@ class Intake:
 
     def run(self, state):
         """ Run intake at set speed """
-        speed = 0.75
+        speed = 0.65
         if state == 'Forward':
             self.intakeMotor.set(speed)
         elif state == 'Reverse':

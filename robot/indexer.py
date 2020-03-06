@@ -1,4 +1,4 @@
-""" indexer functions """
+""" Indexer Functions """
 # importing packages
 import wpilib
 from ctre import *
@@ -22,8 +22,8 @@ class Indexer:
         self.indexer = wpilib.SpeedControllerGroup(self.verticalIndexerLeft, self.verticalIndexerRight, self.flatIndexer)
 
     def run(self, state):
-        # run indexer forward
-        speed = 1.0
+        """ Running indexer forward or in reverse """
+        speed = 0.75
         if state == 'Forward':
             self.indexer.set(speed)
         elif state == 'Reverse':

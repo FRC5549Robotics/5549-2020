@@ -1,4 +1,4 @@
-""" vision functions """
+""" Vision Functions """
 # importing packages
 import wpilib
 from networktables import NetworkTables
