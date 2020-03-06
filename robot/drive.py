@@ -115,15 +115,30 @@ class Drive:
 
     def turnToTarget(self, angleLimelight):
         # turn robot to limelight target
-        # error = 2
+        # error = 3
         # if angleLimelight < -error:
-        #     self.drive.tankDrive(-0.75, -0.75)
+        #     self.drive.tankDrive(-0.6, -0.6)
         # elif angleLimelight > error:
-        #     self.drive.tankDrive(0.75, 0.75)
-        if abs(angleLimelight) >= 2:  # just proportional smoothing
-            nspeed = angleLimelight / 35
-            self.drive.tankDrive(nspeed+0.2, nspeed+0.2)
-        return
+        #     self.drive.tankDrive(0.6, 0.6)
+        # if abs(angleLimelight) >= 2:  # just proportional smoothing
+        if angleLimelight > 15:
+            nspeed = angleLimelight / 50
+            self.drive.tankDrive(nspeed+0.1, nspeed+0.1)
+        elif 5 < angleLimelight < 15:
+            nspeed = angleLimelight / 75
+            self.drive.tankDrive(nspeed+0.3, nspeed+0.3)
+        elif 0 < angleLimelight < 5:
+            self.drive.tankDrive(0.4, 0.4)
+        elif -2 < angleLimelight < 2:
+            self.drive.stopMotor()
+        elif -5 < angleLimelight < 0:
+            self.drive.tankDrive(-0.4, -0.4)
+        elif -15 < angleLimelight < -5:
+            nspeed = angleLimelight / 75
+            self.drive.tankDrive(nspeed-0.3, nspeed-0.3)
+        elif angleLimelight < -15:
+            nspeed = angleLimelight / 50
+            self.drive.tankDrive(nspeed-0.1, nspeed-0.1)
 
     def changeGear(self, buttonStatus):
         # switches gear mode

@@ -119,7 +119,7 @@ class Dashboard:
         self.dashboard.putNumber("Power 2", output2)
 
 
-    def testValues(self, var, value):
+    def testValues(self, var):
         # if subsystem == 'Drive':
         #     self.DrivekP = self.dashboard.getNumber('Drive kP', 0)
         #     self.DrivekI = self.dashboard.getNumber('Drive kI', 0)
@@ -131,22 +131,22 @@ class Dashboard:
         #     self.shooterkI = self.dashboard.getNumber('Shooter kI', 0)
         #     self.shooterkD = self.dashboard.getNumber('Shooter kD', 0)
         #     return self.shooterkP, self.shooterkI, self.shooterkD
-        # if var == 'P Top':
-        #     return self.dashboard.getNumber('Shooter P Top', 0)
-        # if var == 'I Top':
-        #     return self.dashboard.getNumber('Shooter I Top', 0)
-        # if var == 'D Top':
-        #     return self.dashboard.getNumber('Shooter D Top', 0)
-        # if var == 'F Top':
-        #     return self.dashboard.getNumber('Shooter F Top', 0)
-        # if var == 'P Bottom':
-        #     return self.dashboard.getNumber('Shooter P Bottom', 0)
-        # if var == 'I Bottom':
-        #     return self.dashboard.getNumber('Shooter I Bottom', 0)
-        # if var == 'D Bottom':
-        #     return self.dashboard.getNumber('Shooter D Bottom', 0)
-        # if var == 'F Bottom':
-        #     return self.dashboard.getNumber('Shooter F Bottom', 0)
+        if var == 'P Top':
+            return self.dashboard.getNumber('Shooter P Top', 0)
+        if var == 'I Top':
+            return self.dashboard.getNumber('Shooter I Top', 0)
+        if var == 'D Top':
+            return self.dashboard.getNumber('Shooter D Top', 0)
+        if var == 'F Top':
+            return self.dashboard.getNumber('Shooter F Top', 0)
+        if var == 'P Bottom':
+            return self.dashboard.getNumber('Shooter P Bottom', 0)
+        if var == 'I Bottom':
+            return self.dashboard.getNumber('Shooter I Bottom', 0)
+        if var == 'D Bottom':
+            return self.dashboard.getNumber('Shooter D Bottom', 0)
+        if var == 'F Bottom':
+            return self.dashboard.getNumber('Shooter F Bottom', 0)
         if var == 'RPM Top':
             return self.dashboard.getNumber('RPM Top', 0)
         if var == 'RPM Bottom':

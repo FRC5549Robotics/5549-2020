@@ -26,20 +26,20 @@ class Shooter:
         self.bottomMotors = wpilib.SpeedControllerGroup(self.bottomShooterEncoder, self.bottomShooterMotor)
 
         # top PID
-        self.kPTop = 0
-        self.kITop = 0.0001
+        self.kPTop = 0.9
+        self.kITop = 0.009
         self.kDTop = 0
-        self.kFTop = 1
+        self.kFTop = 1.035 # 1
 
         self.integralTop = 0
         self.previousErrorTop = 0
         self.setpointTop = 0
 
         # bottom PID
-        self.kPBottom = 0
-        self.kIBottom = 0.0001
+        self.kPBottom = 0.9
+        self.kIBottom = 0.009
         self.kDBottom = 0
-        self.kFBottom = 0.88
+        self.kFBottom = 0.932 # 0.88
 
         self.integralBottom = 0
         self.previousErrorBottom = 0
@@ -111,7 +111,7 @@ class Shooter:
             self.PIDTopOutput = self.rcwTop / 4400
             self.previousErrorTop = errorTop
         elif PID == 'Bottom':
-            errorBottom = self.setpointBottom - self.getShooterRPM('Bottom')
+            errorBottom = abs(self.setpointBottom) - abs(self.getShooterRPM('Bottom'))
             self.integralBottom = self.integralBottom + errorBottom
             if self.integralBottom > 4400:
                 self.integralBottom = 4400

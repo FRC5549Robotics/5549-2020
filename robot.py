@@ -8,7 +8,7 @@ from robot import *
 from networktables import NetworkTables
 from robotpy_ext.control.toggle import Toggle
 from wpilib.drive import DifferentialDrive
-from timeit import default_timer as timer
+import time
 from rev.color import ColorSensorV3
 
 """
@@ -71,18 +71,18 @@ class Manticore(wpilib.TimedRobot):
         # color sensor
         i2cPort = wpilib.I2C.Port.kOnboard
         self.colorSensor = ColorSensorV3(i2cPort)
-        self.colorSensitivity = 160
+        self.colorSensitivity = 180
 
         """ Pneumatics """
         # pneumatic compressor
         self.compressor = wpilib.Compressor(0)
         self.compressor.setClosedLoopControl(True)
-        self.compressor.start()
+        self.compressor.stop()
 
         """ Shooter """
         # self.shooter.reset('Both')
         self.setpointReached = False
-
+        self.shooterRun = False
 
         """" Limit Switch """
         self.limitSwitch = wpilib.DigitalInput(0)
@@ -219,10 +219,10 @@ class Manticore(wpilib.TimedRobot):
         # self.shooter.setPID('Bottom')
 
         # drive train encoders
-        self.driveTrainEncoder = (self.drive.rearLeftEncoder.getSelectedSensorPosition() + self.drive.rearRightEncoder.getSelectedSensorPosition()) / 2
-        self.dashboard.testValues('Drive Train Left Encoder', self.drive.rearLeftEncoder.getSelectedSensorPosition())
-        self.dashboard.testValues('Drive Train Right Encoder', self.drive.rearRightEncoder.getSelectedSensorPosition())
-        self.dashboard.testValues('Drive Train Encoder', self.driveTrainEncoder)
+        # self.driveTrainEncoder = (self.drive.rearLeftEncoder.getSelectedSensorPosition() + self.drive.rearRightEncoder.getSelectedSensorPosition()) / 2
+        # self.dashboard.testValues('Drive Train Left Encoder', self.drive.rearLeftEncoder.getSelectedSensorPosition())
+        # self.dashboard.testValues('Drive Train Right Encoder', self.drive.rearRightEncoder.getSelectedSensorPosition())
+        # self.dashboard.testValues('Drive Train Encoder', self.driveTrainEncoder)
 
         # changing drive train gears
         self.drive.changeGear(self.gearButtonStatus.get())
@@ -231,7 +231,7 @@ class Manticore(wpilib.TimedRobot):
         self.dashboard.dashboardLiftStatus(self.lift.getLiftSolenoid())
 
         # compressor status
-        self.dashboard.dashboardCompressorStatus(self.compressor.enabled())
+        # self.dashboard.dashboardCompressorStatus(self.compressor.enabled())
 
         # shooter rpm
         self.shooterRPMTop = (abs(self.shooter.getShooterRPM('Top')))
@@ -274,20 +274,23 @@ class Manticore(wpilib.TimedRobot):
 
         """ Shooter """
         # sets shooter at a certain RPM if the trigger is being pressed
-        self.targetRPMTop = 1500
-        self.targetRPMBottom = 3000
+        self.targetRPMTop = 2000
+        self.targetRPMBottom = 4000
         self.setpointReached = False
         self.shooter.setSetpoint('Top', self.targetRPMTop)
         self.shooter.setSetpoint('Bottom', self.targetRPMBottom)
         if self.shooterLaunch > 0.25:
+            self.shooterRun = True
             self.shooter.execute('Top')
             self.shooter.execute('Bottom')
             self.ballsInPossession = 0
-            if self.shooterRPMTop >= (self.targetRPMTop - 25) and self.shooterRPMBottom >= (self.targetRPMBottom -25) and self.setpointReached is False:
+            error = 100
+            if (self.targetRPMTop - error) <= self.shooterRPMTop <= (self.targetRPMTop + error) and (self.targetRPMBottom - error) <= self.shooterRPMBottom <= (self.targetRPMBottom + error) and self.setpointReached is False:
                 self.setpointReached = True
             else:
                 self.setpointReached = False
         else:
+            self.shooterRun = False
             self.shooter.topMotors.set(0)
             self.shooter.bottomMotors.set(0)
 
@@ -336,6 +339,10 @@ class Manticore(wpilib.TimedRobot):
                 self.intake.run('Forward')
                 self.indexer.run('Stop')
                 self.semicircle.run('Stop')
+        elif self.shooterRun is True and self.setpointReached is False:
+            self.intake.run('Forward')
+            self.indexer.run('Stop')
+            self.semicircle.run('Stop')
 
         elif self.setpointReached is True:
             # runs if the target rpm is reached
@@ -355,7 +362,7 @@ class Manticore(wpilib.TimedRobot):
             self.semicircle.run('Stop')
 
         """ Auto Turn w/ NavX """
-        if self.xbox.getRawButton(2) is True:
+        if self.xbox.getRawButton(6) is True:
             self.drive.turnToTarget(self.tx)
             # if self.drive.resetAngle == True:
             #     self.drive.reset()
