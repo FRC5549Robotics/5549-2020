@@ -274,8 +274,13 @@ class Manticore(wpilib.TimedRobot):
 
         """ Shooter """
         # sets shooter at a certain RPM if the trigger is being pressed
-        self.targetRPMTop = 2000
-        self.targetRPMBottom = 4000
+        # self.targetRPMTop = self.dashboard.testValues('RPM Top')
+        # self.targetRPMBottom = self.dashboard.testValues('RPM Bottom')
+        if self.distance < 170:
+            self.targetRPMTop = 3759 + (-22.3 * self.distance) + (0.0576 * (self.distance * self.distance))
+        elif self.distance > 170:
+            self.targetRPMTop = -3330 + (46.1 * self.distance) + (-0.101 * (self.distance * self.distance))
+        self.targetRPMBottom = self.targetRPMTop * 2
         self.setpointReached = False
         self.shooter.setSetpoint('Top', self.targetRPMTop)
         self.shooter.setSetpoint('Bottom', self.targetRPMBottom)
