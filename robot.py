@@ -1,7 +1,6 @@
 """
 Infinite Recharge - Manticore from FRC 5549: Gryphon Robotics
 """
-# import packages
 import wpilib
 from ctre import *
 from robot import *
@@ -105,15 +104,6 @@ class Manticore(wpilib.TimedRobot):
 
         """ NavX """
         # self.drive.navx.reset()
-
-        """ PIDs """
-        # shooter PID
-        # [self.shooterkP, self.shooterkI, self.shooterkD] = self.dashboard.getPID('Shooter')
-        # self.shooter.setPID(self.shooterkP, self.shooterkI, self.shooterkD, 'Both')
-
-        # drive PID
-        # [self.drivekP, self.drivekI, self.drivekD] = self.dashboard.getPID('Drive')
-        # self.drive.setPID(self.drivekP, self.drivekI, self.drivekD)
 
     def autonomousInit(self):
         self.drive.rearRightEncoder.setSelectedSensorPosition(0)
@@ -225,20 +215,30 @@ class Manticore(wpilib.TimedRobot):
         # send RPM of shooter
         self.dashboard.shooterRPMStatus(self.shooter.getShooterRPM('Top'), self.shooter.getShooterRPM('Bottom'))
 
+        # gear status
+        self.dashboard.gearStatus(self.drive.gearSolenoid.get()) 
+
+        # auto align status
+        self.dashboard.autoAlign()
+        self.dashboard.autoRPM(self.setpointReached)
+
+        # turns limit switch on or off based on dashboard status
+        if self.dashboard.limitSwitchToggle is True:
+            self.limitSwitch.start()
+        elif self.dashboard.limitSwitchToggle is False:
+            self.limitSwitch.stop()
+
         # set shooter PID
-        # self.shooter.setVarPID(self.dashboard.testValues('P Top'), self.dashboard.testValues('I Top'), self.dashboard.testValues('D Top'), self.dashboard.testValues('F Top'), 'Top')
-        # self.shooter.setVarPID(self.dashboard.testValues('P Bottom'), self.dashboard.testValues('I Bottom'), self.dashboard.testValues('D Bottom'), self.dashboard.testValues('F Bottom'), 'Bottom')
+        # self.shooter.setVarPID(self.dashboard.getTestValues('P Top'), self.dashboard.getTestValues('I Top'), self.dashboard.getTestValues('D Top'), self.dashboard.getTestValues('F Top'), 'Top')
+        # self.shooter.setVarPID(self.dashboard.getTestValues('P Bottom'), self.dashboard.getTestValues('I Bottom'), self.dashboard.getTestValues('D Bottom'), self.dashboard.getTestValues('F Bottom'), 'Bottom')
         # self.shooter.setPID('Top')
         # self.shooter.setPID('Bottom')
 
         # drive train encoders
         # self.driveTrainEncoder = (self.drive.rearLeftEncoder.getSelectedSensorPosition() + self.drive.rearRightEncoder.getSelectedSensorPosition()) / 2
-        # self.dashboard.testValues('Drive Train Left Encoder', self.drive.rearLeftEncoder.getSelectedSensorPosition())
-        # self.dashboard.testValues('Drive Train Right Encoder', self.drive.rearRightEncoder.getSelectedSensorPosition())
-        # self.dashboard.testValues('Drive Train Encoder', self.driveTrainEncoder)
-
-        # changing drive train gears
-        self.drive.changeGear(self.gearButtonStatus.get())
+        # self.dashboard.putDiagnosticValues('Drive Train Left Encoder', self.drive.rearLeftEncoder.getSelectedSensorPosition())
+        # self.dashboard.putDiagnosticValues('Drive Train Right Encoder', self.drive.rearRightEncoder.getSelectedSensorPosition())
+        # self.dashboard.putDiagnosticValues('Drive Train Encoder', self.driveTrainEncoder)
 
         # sending lift state status to dashboard
         self.dashboard.dashboardLiftStatus(self.lift.getLiftSolenoid())
@@ -275,6 +275,9 @@ class Manticore(wpilib.TimedRobot):
             # sending drive train driving mode to dashboard
             self.dashboard.driveStatus('Tank Drive')
 
+        # changing drive train gears
+        self.drive.changeGear(self.gearButtonStatus.get())
+
 
         """ Lift """
         # changing lift state
@@ -287,8 +290,8 @@ class Manticore(wpilib.TimedRobot):
 
         """ Shooter """
         # sets shooter at a certain RPM if the trigger is being pressed
-        self.targetRPMTop = self.dashboard.testValues('RPM Top')
-        self.targetRPMBottom = self.dashboard.testValues('RPM Bottom')
+        self.targetRPMTop = self.dashboard.getTestValues('RPM Top')
+        self.targetRPMBottom = self.dashboard.getTestValues('RPM Bottom')
         # if self.distance < 170:
         #     self.targetRPMTop = 3759 + (-22.3 * self.distance) + (0.0576 * (self.distance * self.distance))
         # elif self.distance > 170:
@@ -348,7 +351,7 @@ class Manticore(wpilib.TimedRobot):
                 self.indexer.run('Forward')
                 self.semicircle.run('Forward')
 
-            elif self.colorSensorProximity < self.colorSensitivity:
+            elif self.colorSensorProximity < self.colorSensitivity and self.ballsInPossession < 3:
                 # runs if ball is not detected
                 self.intake.run('Forward')
                 self.indexer.run('Forward')
@@ -382,8 +385,9 @@ class Manticore(wpilib.TimedRobot):
             self.indexer.run('Stop')
             self.semicircle.run('Stop')
 
-        """ Auto Turn w/ NavX """
+        """ Auto Turn """
         if self.xbox.getRawButton(6) is True:
+            self.drive.changeGear(False)
             self.drive.turnToTarget(self.tx)
             # if self.drive.resetAngle == True:
             #     self.drive.reset()

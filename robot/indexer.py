@@ -1,11 +1,11 @@
-""" indexer functions """
-# importing packages
+""" Indexer Functions """
 import wpilib
 from ctre import *
 
 
 class Indexer:
     def __init__(self):
+        """ Indexer """
         # vertical indexer motors
         self.verticalIndexerRight = WPI_TalonSRX(9)
         self.verticalIndexerLeft = WPI_VictorSPX(10)
@@ -22,7 +22,7 @@ class Indexer:
         self.indexer = wpilib.SpeedControllerGroup(self.verticalIndexerLeft, self.verticalIndexerRight, self.flatIndexer)
 
     def run(self, state):
-        # run indexer forward
+        """ Runs indexer """
         speed = 1.0
         if state == 'Forward':
             self.indexer.set(speed)

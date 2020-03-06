@@ -1,5 +1,4 @@
 """ Drive Functions """
-# importing packages
 import wpilib
 import navx
 from ctre import *
@@ -53,14 +52,17 @@ class Drive:
         # self.navx.reset()
 
     def setSetpoint(self, setpoint):
+        """ Sets setpoint for drive PID """
         self.setpoint = setpoint
 
     def setPID(self, kP, kI, kD):
+        """ Sets PID Variables """
         self.kP = kP
         self.kI = kI
         self.kP = kD
 
     def PID(self):
+        """ Calcuating next ouput value via PID """
         if self.getGearSolenoid() == 2:
             self.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
         self.error = self.setpoint - (self.navx.getAngle() % 360)
@@ -74,17 +76,15 @@ class Drive:
         self.rcw = self.rcw * 0.5
 
     def execute(self):
+        """ Runs PID with current setpoint """
         self.PID()
         if self.turnRight is True:
             self.drive.tankDrive(self.rcw, self.rcw)
         elif self.turnRight is False:
             self.drive.tankDrive(-self.rcw, -self.rcw)
 
-    def getGearSolenoid(self):
-        return self.gearSolenoid.get()
-
     def turnAngle(self, angle):
-        # turn robot to specified angle values using navx
+        """ Turn robot to specified angle value """
         leftEncoderValue = abs(self.rearLeftEncoder.getSelectedSensorPosition())
         rightEncoderValue = abs(self.rearRightEncoder.getSelectedSensorPosition())
         driveTrainEncoderValue = abs(rightEncoderValue + leftEncoderValue) / 2
