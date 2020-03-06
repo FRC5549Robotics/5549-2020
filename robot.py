@@ -102,6 +102,9 @@ class Manticore(wpilib.TimedRobot):
         self.setpointReached = False
         self.shooterRun = False
 
+        """ Limelight """
+        self.dashboard.limelightDash.putNumber('ledMode', 1)
+
         """ NavX """
         # self.drive.navx.reset()
 
@@ -202,6 +205,8 @@ class Manticore(wpilib.TimedRobot):
         self.drive.rearRightEncoder.setSelectedSensorPosition(0)
         self.drive.rearLeftEncoder.setSelectedSensorPosition(0)
 
+        self.dashboard.limelightDash.putNumber('ledMode', 1)
+
     def teleopPeriodic(self):
         """ Limelight """
         self.tx = self.dashboard.limelight('tx')                # getting horizontal angle to target
@@ -301,6 +306,7 @@ class Manticore(wpilib.TimedRobot):
 
         if self.shooterLaunch > 0.25:
             self.shooterRun = True
+            self.dashboard.limelightDash.putNumber('ledMode', 3)
             self.shooter.execute('Top')
             self.shooter.execute('Bottom')
             self.ballsInPossession = 0
@@ -316,6 +322,7 @@ class Manticore(wpilib.TimedRobot):
 
         else:
             self.shooterRun = False
+            self.dashboard.limelightDash.putNumber('ledMode', 3)
             self.shooter.topMotors.set(0)
             self.shooter.bottomMotors.set(0)
 
@@ -354,6 +361,10 @@ class Manticore(wpilib.TimedRobot):
                 self.intake.run('Forward')
                 self.indexer.run('Forward')
                 self.semicircle.run('Forward')
+                if self.ballsInPossession >= 3:
+                    self.intake.run('Forward')
+                    self.indexer.run('Stop')
+                    self.semicircle.run('Stop')
 
             elif self.colorSensorProximity < self.colorSensitivity:
                 # runs if ball is not detected

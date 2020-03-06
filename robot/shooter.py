@@ -28,20 +28,20 @@ class Shooter:
 
         """ Shooter PID """
         # top PID
-        self.kPTop = 0.1    # 0.9
-        self.kITop = 0.001  # 0.009
+        self.kPTop = 0.9    # 0.1
+        self.kITop = 0.009  # 0.001
         self.kDTop = 0      # 0
-        self.kFTop = 1.15   # 1.035
+        self.kFTop = 0.035  # 1.15
 
         self.integralTop = 0
         self.previousErrorTop = 0
         self.setpointTop = 0
 
         # bottom PID
-        self.kPBottom = 0.105   # 0.9
-        self.kIBottom = 0.001   # 0.009
-        self.kDBottom = 0       # 0
-        self.kFBottom = 0.999   # 0.932
+        self.kPBottom = 0.9   # 0.105
+        self.kIBottom = 0.009 # 0.001
+        self.kDBottom = 0     # 0
+        self.kFBottom = 0.0932 # 0.999
 
         self.integralBottom = 0
         self.previousErrorBottom = 0
