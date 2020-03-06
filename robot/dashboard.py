@@ -29,7 +29,6 @@ class Dashboard:
         self.dashboard.putNumber('Shooter D Bottom', 0)
         self.dashboard.putNumber('Shooter F Bottom', 0)
 
-
         # drive PID
         # self.dashboard.putNumber('Drive kP', 1)
         # self.dashboard.putNumber('Drive kI', 0)
@@ -40,44 +39,45 @@ class Dashboard:
 
         self.dashboard.putBoolean("Limit Switch Toggle", True)
 
-
     def gearStatus(self, solenoidValue):
         """ Displays high/low gear to dashboard """
         if solenoidValue == 1:
             self.dashboard.putString("Gear Status", "Low")
         elif solenoidValue == 2:
             self.dashboard.putString("Gear Status", "High")
-
+           
 
     def liftStatus(self, solenoidValue):
-        """ Displays high/low gear to dashboard """
+        """ Display Up/Down lift state to dashboard """
         if solenoidValue == 1:
             self.dashboard.putString("Lift Status", "Down")
         elif solenoidValue == 2:
             self.dashboard.putString("Lift Status", "Up")
 
+            
+    def dashboardCompressorStatus(self, compressorValue):
+        """ Display On/Off compressor state to dashboard """
+        if compressorValue is True:
+
 
     def compressorStatus(self, compressorValue):
-        """ Displays high/low gear to dashboard """
+        """ Display On/Off compressor state to dashboard """
         if compressorValue == True:
             self.dashboard.putString("Compressor", "On")
-        elif compressorValue == False:
+        elif compressorValue is False:
             self.dashboard.putString("Compressor", "Off")
 
-
     def driveStatus(self, driveButton):
-        """ Displays drive type to dashboard """
+        """ Display drive mode to dashboard (tank/arcade) """
         if driveButton == 'Tank Drive':
             self.dashboard.putString("Drive Status", "Tank Drive")
         elif driveButton == 'Arcade Drive':
             self.dashboard.putString("Drive Status", "Arcade Drive")
 
-
     def shooterRPMStatus(self, TopRPM, BottomRPM):
-        """ Displays shooter rpm """
+        """ Display top and bottom shooter motor RPM to testing dashboard """
         self.dashboard.putNumber("Top Shooter RPM", TopRPM)
         self.dashboard.putNumber("Bottom Shooter RPM", BottomRPM)
-
 
     def limelight(self, value):
         """ Returns limelight values """
@@ -86,16 +86,13 @@ class Dashboard:
         elif value == 'ty':
             return self.limelightDash.getNumber('ty', 0)
 
-
     def ballsObtained(self, value):
-        """ Shows balls obtained """
+        """ Display the number of balls obtained based on limit switch values """
         self.dashboard.putNumber("Balls Obtained", value)
 
-
     def colorSensor(self, value):
-        """ Shows Color Sensor Values """
+        """ Display color sensor values to testing dashboard """
         self.dashboard.putNumber("Color Sensor", value)
-
 
     def limelightHorizontalAngle(self, angle):
         """ Puts tx angle from limelight """
@@ -104,11 +101,9 @@ class Dashboard:
         else:
             self.dashboard.putNumber("Limelight tx", angle)
 
-
     def navxAngle(self, angle):
         """ Displays NavX angle """
         self.dashboard.putNumber("NavX Angle", angle)
-
 
     def distance(self, distance):
         """ Displays the distance that has been calculated from Limelight """
@@ -117,7 +112,7 @@ class Dashboard:
         else:
             pass
 
-
+          
     def autoAlign(self):
         """ Displays status of auto-align """
         if abs(self.limelightDash.getNumber('ty', 0)) < 3:

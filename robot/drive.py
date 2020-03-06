@@ -31,8 +31,8 @@ class Drive:
         self.gearSolenoid = wpilib.DoubleSolenoid(2, 3)
 
         """ NavX """
-        # self.navx = navx.AHRS.create_spi()
-        # self.navx.reset()
+        self.navx = navx.AHRS.create_spi()
+        self.navx.reset()
 
         """ PID """
         self.setpoint = 0
@@ -49,7 +49,7 @@ class Drive:
         """ Resetting sensors """
         self.rearLeftEncoder.setSelectedSensorPosition(0)
         self.rearRightEncoder.setSelectedSensorPosition(0)
-        # self.navx.reset()
+        self.navx.reset()
 
     def setSetpoint(self, setpoint):
         """ Sets setpoint for drive PID """
@@ -61,6 +61,7 @@ class Drive:
         self.kI = kI
         self.kP = kD
 
+        
     def PID(self):
         """ Calcuating next ouput value via PID """
         if self.getGearSolenoid() == 2:
@@ -75,8 +76,10 @@ class Drive:
         self.rcw = (self.kP * self.error) + (self.kI * self.integral) + (self.kD * self.derivative)
         self.rcw = self.rcw * 0.5
 
+
     def execute(self):
         """ Runs PID with current setpoint """
+        # does not work due to navx not working. see turnAngle() instead
         self.PID()
         if self.turnRight is True:
             self.drive.tankDrive(self.rcw, self.rcw)
@@ -85,10 +88,14 @@ class Drive:
 
     def turnAngle(self, angle):
         """ Turn robot to specified angle value """
+        # getting encoder position values and averaging
         leftEncoderValue = abs(self.rearLeftEncoder.getSelectedSensorPosition())
         rightEncoderValue = abs(self.rearRightEncoder.getSelectedSensorPosition())
         driveTrainEncoderValue = abs(rightEncoderValue + leftEncoderValue) / 2
+
+        # converting encoder value to angles
         self.targetAngleEncoder = abs((4096 / 90) * angle)
+
         if angle > 0:
             self.targetAngleEncoder = self.targetAngleEncoder + 1024
         elif angle < 0:

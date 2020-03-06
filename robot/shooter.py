@@ -20,26 +20,27 @@ class Shooter:
         self.topMotors = wpilib.SpeedControllerGroup(self.topShooterEncoder, self.topShooterMotor)
         self.bottomMotors = wpilib.SpeedControllerGroup(self.bottomShooterEncoder, self.bottomShooterMotor)
 
+        """ Shooter PID """
         # top PID
-        self.kPTop = 0.1    # 0.9
-        self.kITop = 0.001  # 0.009
+        self.kPTop = 0.9    # 0.1
+        self.kITop = 0.009  # 0.001
         self.kDTop = 0      # 0
-        self.kFTop = 1.15   # 1.035
+        self.kFTop = 0.035  # 1.15
 
         self.integralTop = 0
         self.previousErrorTop = 0
         self.setpointTop = 0
 
         # bottom PID
-        self.kPBottom = 0.105   # 0.9
-        self.kIBottom = 0.001   # 0.009
-        self.kDBottom = 0       # 0
-        self.kFBottom = 0.999   # 0.932
+        self.kPBottom = 0.9   # 0.105
+        self.kIBottom = 0.009 # 0.001
+        self.kDBottom = 0     # 0
+        self.kFBottom = 0.0932 # 0.999
 
         self.integralBottom = 0
         self.previousErrorBottom = 0
         self.setpointBottom = 0
-
+        
 
     def convertVelocityToRPM(velocity):
         """ This method will take in velocity and convert the velocity into rotations per minute """
@@ -88,22 +89,26 @@ class Shooter:
         if PID == 'Top':
             errorTop = self.setpointTop - self.getShooterRPM('Top')
             self.integralTop = self.integralTop + errorTop
+
             if self.integralTop > 4400:
                 self.integralTop = 4400
+
             derivative = errorTop - self.previousErrorTop
             self.rcwTop = (self.kPTop * errorTop) + (self.kITop * self.integralTop) + (self.kDTop * derivative) + (self.kFTop * self.setpointTop)
             self.PIDTopOutput = self.rcwTop / 4400
             self.previousErrorTop = errorTop
+
         elif PID == 'Bottom':
             errorBottom = abs(self.setpointBottom) - abs(self.getShooterRPM('Bottom'))
             self.integralBottom = self.integralBottom + errorBottom
+
             if self.integralBottom > 4400:
                 self.integralBottom = 4400
+
             derivative = errorBottom - self.previousErrorBottom
             self.rcwBottom = (self.kPBottom * errorBottom) + (self.kIBottom * self.integralBottom) + (self.kDBottom * derivative) + (self.kFBottom * self.setpointBottom)
             self.PIDBottomOutput = self.rcwBottom / 4400
             self.previousErrorBottom = errorBottom
-        
 
     def execute(self, PID):
         """ Executes the drive-train PID """
