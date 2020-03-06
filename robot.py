@@ -12,7 +12,7 @@ import time
 from rev.color import ColorSensorV3
 
 """
-Motor Mapping
+### Motor Mapping ###
 1 (Victor SPX - Positive): frontLeftMotor
 2 (Victor SPX - Negative): frontRightMotor
 3 (Talon SRX - Negative): rearLeftEncoder
@@ -27,6 +27,22 @@ Motor Mapping
 12 (Talon SRX - Negative): flatIndexer
 13 (Victor SPX): liftMotor
 14 (Talon SRX - Negative): semiCircleMotor
+
+### Controller Mapping ###
+--- Joystick ---
+Right Thumb Button: change drive mode
+Right Trigger: gear shift
+
+--- Xbox ---
+Left Trigger: run lift motor
+Right Trigger: run shooter motor
+Left Bumper: actuate lift
+Right Bumper: auto align
+dPAD Top: reverse intake
+dPAD Bottom: runs intake + indexer + semicircle w/ color sensor
+Back Button: the Oh [insert four letter string here] button
+Start Button: run everything at 100% power 
+
 """
 
 
@@ -42,13 +58,11 @@ class Manticore(wpilib.TimedRobot):
         self.shooter = Shooter()
         self.vision = Vision()
 
-
         """ Joystick """
         # setting joysticks and xbox controllers
         self.leftJoystick = wpilib.Joystick(0)
         self.rightJoystick = wpilib.Joystick(1)
         self.xbox = wpilib.Joystick(2)
-
 
         """ Button Status and Toggles """
         # button for switching between arcade and tank drive
@@ -68,10 +82,16 @@ class Manticore(wpilib.TimedRobot):
         # button for autoaim
         self.turnButtonStatus = self.xbox.getRawButton(6)
 
+        """ Sensors """
         # color sensor
         i2cPort = wpilib.I2C.Port.kOnboard
         self.colorSensor = ColorSensorV3(i2cPort)
         self.colorSensitivity = 180
+
+        """ Limit Switch """
+        self.limitSwitch = wpilib.DigitalInput(0)
+        self.ballsInPossession = 0
+        self.limitSwitchTriggered = False
 
         """ Pneumatics """
         # pneumatic compressor
@@ -80,17 +100,11 @@ class Manticore(wpilib.TimedRobot):
         self.compressor.stop()
 
         """ Shooter """
-        # self.shooter.reset('Both')
         self.setpointReached = False
         self.shooterRun = False
 
-        """" Limit Switch """
-        self.limitSwitch = wpilib.DigitalInput(0)
-        self.ballsInPossession = 0
-        self.limitSwitchTriggered = False
-
         """ NavX """
-        self.drive.navx.reset()
+        # self.drive.navx.reset()
 
         """ PIDs """
         # shooter PID
@@ -112,7 +126,6 @@ class Manticore(wpilib.TimedRobot):
         self.turnAngle2 = False
         self.turnAngle3 = False
         self.firstPeriodDone = False
-
 
 
     def autonomousPeriodic(self):
@@ -186,7 +199,7 @@ class Manticore(wpilib.TimedRobot):
 
     def teleopInit(self):
         self.drive.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
-        self.drive.navx.reset()
+        # self.drive.navx.reset()
         self.drive.rearRightEncoder.setSelectedSensorPosition(0)
         self.drive.rearLeftEncoder.setSelectedSensorPosition(0)
 
@@ -274,12 +287,14 @@ class Manticore(wpilib.TimedRobot):
 
         """ Shooter """
         # sets shooter at a certain RPM if the trigger is being pressed
-        # self.targetRPMTop = self.dashboard.testValues('RPM Top')
-        # self.targetRPMBottom = self.dashboard.testValues('RPM Bottom')
-        if self.distance < 170:
-            self.targetRPMTop = 3759 + (-22.3 * self.distance) + (0.0576 * (self.distance * self.distance))
-        elif self.distance > 170:
-            self.targetRPMTop = -3330 + (46.1 * self.distance) + (-0.101 * (self.distance * self.distance))
+        self.targetRPMTop = self.dashboard.testValues('RPM Top')
+        self.targetRPMBottom = self.dashboard.testValues('RPM Bottom')
+        # if self.distance < 170:
+        #     self.targetRPMTop = 3759 + (-22.3 * self.distance) + (0.0576 * (self.distance * self.distance))
+        # elif self.distance > 170:
+        #     self.targetRPMTop = -3330 + (46.1 * self.distance) + (-0.101 * (self.distance * self.distance))
+        # self.targetRPMTop = 1000
+        # self.targetRPMBottom = 2000
         self.targetRPMBottom = self.targetRPMTop * 2
         self.setpointReached = False
         self.shooter.setSetpoint('Top', self.targetRPMTop)
@@ -344,6 +359,7 @@ class Manticore(wpilib.TimedRobot):
                 self.intake.run('Forward')
                 self.indexer.run('Stop')
                 self.semicircle.run('Stop')
+
         elif self.shooterRun is True and self.setpointReached is False:
             self.intake.run('Forward')
             self.indexer.run('Stop')

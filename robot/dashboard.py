@@ -39,6 +39,8 @@ class Dashboard:
         self.dashboard.putNumber('RPM Top', 0)
         self.dashboard.putNumber('RPM Bottom', 0)
 
+        self.dashboard.putBoolean("Limit Switch Toggle", True)
+
 
     def dashboardGearStatus(self, solenoidValue):
         # display high/low gear to dashboard
@@ -118,6 +120,18 @@ class Dashboard:
         self.dashboard.putNumber("Power 1", output1)
         self.dashboard.putNumber("Power 2", output2)
 
+    def autoAlign(self):
+        if abs(self.limelightDash.getNumber('ty', 0)) < 3:
+            self.dashboard.putBoolean("Auto Align", True)
+
+    def autoRPM(self, bool):
+        if bool == True:
+            self.dashboard.putBoolean("Auto RPM", True)
+        else:
+            self.dashboard.putBoolean("Auto RPM", False)
+
+    def limitSwitchToggle(self):
+        return self.dashboard.getBoolean("Limit Switch Toggle")
 
     def testValues(self, var):
         # if subsystem == 'Drive':

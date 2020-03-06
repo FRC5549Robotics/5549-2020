@@ -12,10 +12,9 @@ class Intake:
         # reverse intake motor
         self.intakeMotor.setInverted(True)
 
-
     def run(self, state):
-        # run indexer forward
-        speed = 0.5
+        """ Run intake at set speed """
+        speed = 0.75
         if state == 'Forward':
             self.intakeMotor.set(speed)
         elif state == 'Reverse':

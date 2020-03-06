@@ -26,20 +26,20 @@ class Shooter:
         self.bottomMotors = wpilib.SpeedControllerGroup(self.bottomShooterEncoder, self.bottomShooterMotor)
 
         # top PID
-        self.kPTop = 0.9
-        self.kITop = 0.009
-        self.kDTop = 0
-        self.kFTop = 1.035 # 1
+        self.kPTop = 0.1    # 0.9
+        self.kITop = 0.001  # 0.009
+        self.kDTop = 0      # 0
+        self.kFTop = 1.15   # 1.035
 
         self.integralTop = 0
         self.previousErrorTop = 0
         self.setpointTop = 0
 
         # bottom PID
-        self.kPBottom = 0.9
-        self.kIBottom = 0.009
-        self.kDBottom = 0
-        self.kFBottom = 0.932 # 0.88
+        self.kPBottom = 0.105   # 0.9
+        self.kIBottom = 0.001   # 0.009
+        self.kDBottom = 0       # 0
+        self.kFBottom = 0.999   # 0.932
 
         self.integralBottom = 0
         self.previousErrorBottom = 0
@@ -75,7 +75,6 @@ class Shooter:
         RPM = velocity * conversionFactor
         return RPM
 
-
     def getShooterRPM(self, motors):
         """ This method will get velocity return rpm of the top or bottom shooter speed controller group
 
@@ -92,15 +91,14 @@ class Shooter:
             bottomShooterRPM = Shooter.convertVelocityToRPM(bottomEncoderVelocity)
             return bottomShooterRPM
 
-
     def setSetpoint(self, PID, setpoint):
         if PID == 'Top':
             self.setpointTop = setpoint
         elif PID == 'Bottom':
             self.setpointBottom = setpoint
 
-
     def setPID(self, PID):
+        """ Method to set two different PIDs for top shooter and bottom shooter with a backspin on bottom shooter """
         if PID == 'Top':
             errorTop = self.setpointTop - self.getShooterRPM('Top')
             self.integralTop = self.integralTop + errorTop

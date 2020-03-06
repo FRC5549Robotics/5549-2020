@@ -12,9 +12,8 @@ class Semicircle:
         # reverse semicircle motor
         self.semicircleMotor.setInverted(True)
 
-
     def run(self, state):
-        # run indexer forward
+        """ Run semicircle at set speed """
         speed = 0.70
         if state == 'Forward':
             self.semicircleMotor.set(speed)

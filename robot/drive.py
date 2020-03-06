@@ -9,7 +9,7 @@ from wpilib.controller import PIDController
 
 class Drive:
     def __init__(self):
-        """ Drive """
+        """ Drive Train """
         # drive train motors
         self.frontLeftMotor = WPI_VictorSPX(1)
         self.frontRightMotor = WPI_VictorSPX(2)
@@ -27,15 +27,13 @@ class Drive:
         # setting up differential drive
         self.drive = DifferentialDrive(self.leftDrive, self.rightDrive)
 
-
         """ Pneumatics """
         # drive pneumatics
         self.gearSolenoid = wpilib.DoubleSolenoid(2, 3)
 
-
         """ NavX """
-        self.navx = navx.AHRS.create_spi()
-        self.navx.reset()
+        # self.navx = navx.AHRS.create_spi()
+        # self.navx.reset()
 
         """ PID """
         self.setpoint = 0
@@ -48,21 +46,19 @@ class Drive:
 
         self.resetAngle = True
 
-
     def reset(self):
+        """ Resetting sensors """
         self.rearLeftEncoder.setSelectedSensorPosition(0)
         self.rearRightEncoder.setSelectedSensorPosition(0)
-
+        # self.navx.reset()
 
     def setSetpoint(self, setpoint):
         self.setpoint = setpoint
-
 
     def setPID(self, kP, kI, kD):
         self.kP = kP
         self.kI = kI
         self.kP = kD
-
 
     def PID(self):
         if self.getGearSolenoid() == 2:
@@ -77,7 +73,6 @@ class Drive:
         self.rcw = (self.kP * self.error) + (self.kI * self.integral) + (self.kD * self.derivative)
         self.rcw = self.rcw * 0.5
 
-
     def execute(self):
         self.PID()
         if self.turnRight is True:
@@ -85,10 +80,8 @@ class Drive:
         elif self.turnRight is False:
             self.drive.tankDrive(-self.rcw, -self.rcw)
 
-
     def getGearSolenoid(self):
         return self.gearSolenoid.get()
-
 
     def turnAngle(self, angle):
         # turn robot to specified angle values using navx
@@ -114,13 +107,7 @@ class Drive:
             self.rightDrive.stopMotor()
 
     def turnToTarget(self, angleLimelight):
-        # turn robot to limelight target
-        # error = 3
-        # if angleLimelight < -error:
-        #     self.drive.tankDrive(-0.6, -0.6)
-        # elif angleLimelight > error:
-        #     self.drive.tankDrive(0.6, 0.6)
-        # if abs(angleLimelight) >= 2:  # just proportional smoothing
+        """ Turn robot to the limelight target """
         if angleLimelight > 15:
             nspeed = angleLimelight / 50
             self.drive.tankDrive(nspeed+0.1, nspeed+0.1)
@@ -141,7 +128,7 @@ class Drive:
             self.drive.tankDrive(nspeed-0.1, nspeed-0.1)
 
     def changeGear(self, buttonStatus):
-        # switches gear mode
+        """ Switch gear between high and low """
         if buttonStatus is True:
             # high gear
             self.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kForward)
@@ -149,14 +136,12 @@ class Drive:
             # low gear
             self.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
 
-
     def tankDrive(self, leftJoystickAxis, rightJoystickAxis):
-        # tank drive at set scaling
+        """ Tank drive at set scaling using both joysticks """
         scaling = 1
         self.drive.tankDrive(-leftJoystickAxis * scaling, rightJoystickAxis * scaling, True)
 
-
     def arcadeDrive(self, rightJoystickAxis, rotateAxis):
-        # arcade drive at set scaling
+        """ Arcade drive at set scaling using the right joystick """
         scaling = 1
         self.drive.arcadeDrive(rotateAxis, -rightJoystickAxis * scaling, True)
