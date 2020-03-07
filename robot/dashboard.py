@@ -38,6 +38,7 @@ class Dashboard:
         self.dashboard.putNumber('RPM Bottom', 0)
 
         self.dashboard.putBoolean("Limit Switch Toggle", False)
+        self.dashboard.putBoolean("Distance Range", False)
 
 
     def gearStatus(self, solenoidValue):
@@ -134,6 +135,13 @@ class Dashboard:
     def limitSwitchToggle(self):
         """ Allows for limit switch toggle """
         return self.dashboard.getBoolean("Limit Switch Toggle", False)
+
+    def distanceStatus(self, bool):
+        """ Allows for limit switch toggle """
+        if bool is True:
+            self.dashboard.getBoolean("Distance Range", True)
+        else:
+            self.dashboard.getBoolean("Distance Range", False)
 
 
     def getTestValues(self, var):

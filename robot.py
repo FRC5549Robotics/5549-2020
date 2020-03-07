@@ -101,16 +101,19 @@ class Manticore(wpilib.TimedRobot):
         self.setpointReached = False
         self.shooterRun = False
 
-        """ Limelight """
-        self.dashboard.limelightDash.putNumber('ledMode', 1)
-
         """ NavX """
         # self.drive.navx.reset()
+
+        """ Timer """
+        self.timer = wpilib.Timer()
 
     def autonomousInit(self):
         self.drive.rearRightEncoder.setSelectedSensorPosition(0)
         self.drive.rearLeftEncoder.setSelectedSensorPosition(0)
-        self.timer = wpilib.Timer()
+
+        self.timer.reset()
+        self.timer.start()
+
         self.encoderReset1 = False
         self.encoderReset2 = False
         self.encoderReset3 = False
@@ -121,77 +124,133 @@ class Manticore(wpilib.TimedRobot):
 
 
     def autonomousPeriodic(self):
-        # timer
-        self.timer.reset()
-        self.timer.start()
+        if self.timer.get() <= 4.0:
+            """ Limelight """
+            self.tx = self.dashboard.limelight('tx')  # getting horizontal angle to target
+            self.ty = self.dashboard.limelight('ty')  # getting vertical angle to target
+            self.dashboard.limelightHorizontalAngle(self.tx)
+            self.distance = self.vision.getDistance(self.ty)
 
-        # limelight
-        self.tx = self.dashboard.limelight('tx')
-
-        # encoder
-        self.driveTrainEncoder = (self.drive.rearLeftEncoder.getSelectedSensorPosition() + self.drive.rearRightEncoder.getSelectedSensorPosition()) / 2
-
-        # shooter
-        self.shooter.setSetpoint('Top', 2000)
-        self.shooter.setSetpoint('Bottom', 2000)
-
-        # runs between 0 and 5 seconds
-        if self.timer.get() < 5:
             self.drive.turnToTarget(self.tx)
+
+        elif 4.0 < self.timer.get() <= 8.0:
+            """ Shooter """
+            # sets shooter at a certain RPM if the trigger is being pressed
+            if self.distance < 170:
+                self.targetRPMTop = 3759 + (-22.3 * self.distance) + (0.0576 * (self.distance * self.distance))
+            elif self.distance > 170:
+                self.targetRPMTop = -3330 + (46.1 * self.distance) + (-0.101 * (self.distance * self.distance))
+
+            # sets shooter at a certain RPM if right trigger is being pressed
+            self.targetRPMBottom = self.targetRPMTop * 2  # introducing backspin
+            self.shooter.setSetpoint('Top', self.targetRPMTop)
+            self.shooter.setSetpoint('Bottom', self.targetRPMBottom)
+            self.setpointReached = False
+
+            self.shooterRun = True
+            self.dashboard.limelightDash.putNumber('ledMode', 3)
             self.shooter.execute('Top')
             self.shooter.execute('Bottom')
-            if abs(self.tx) < 2:
-                self.semicircle.run('Forward')
+            self.ballsInPossession = 0
+            error = 100  # allowing 100 RPM error
 
-        # runs between 5 and 10
-        elif 5 < self.timer.get() > 10:
-            if self.firstPeriodDone == False:
-                self.semicircle.run('Stop')
-                self.firstPeriodDone = True
-            self.shooter.setSetpoint('Top', 0)
-            self.shooter.setSetpoint('Bottom', 0)
-            if self.encoderReset1 == False:
-                self.drive.rearRightEncoder.setSelectedSensorPosition(0)
-                self.drive.rearLeftEncoder.setSelectedSensorPosition(0)
-                self.encoderReset1 = True
-            if self.turnAngle1 == False:
-                self.drive.turnAngle(-150)
-                self.turnAngle1 = True
-            if self.encoderReset2 == False:
-                self.drive.rearRightEncoder.setSelectedSensorPosition(0)
-                self.drive.rearLeftEncoder.setSelectedSensorPosition(0)
-                self.encoderReset2 = True
-            self.drive.drive.tankDrive(0.5, 0.5)
-            self.intake.run('Forward')
-            self.indexer.run('Forward')
-            self.semicircle.semicircleMotor.set(1)
-            if self.driveTrainEncoder > 16384:
-                self.drive.drive.stopMotor()
+            if (self.targetRPMTop - error) <= self.shooterRPMTop <= (self.targetRPMTop + error) and \
+                    (self.targetRPMBottom - error) <= self.shooterRPMBottom <= (self.targetRPMBottom + error) and \
+                    self.setpointReached is False:
+                self.setpointReached = True
+
             else:
-                pass
+                self.setpointReached = False
 
-        # runs past 10 seconds
-        if self.timer.hasPeriodPassed(10):
-            if self.encoderReset3 == False:
-                self.drive.rearRightEncoder.setSelectedSensorPosition(0)
-                self.drive.rearLeftEncoder.setSelectedSensorPosition(0)
-                self.encoderReset3 = True
-            if self.turnAngle2 == False and self.encoderReset3 == True:
-                self.drive.turnAngle(135)
-                self.turnAngle2 = True
-            if self.turnAngle3 == False and self.turnAngle2 == True:
-                self.drive.turnAngle(self.tx)
-                self.turnAngle3 = True
-            if self.turnAngle3 == True:
-                self.shooter.setSetpoint('Top', 2000)
-                self.shooter.setSetpoint('Bottom', 4000)
+            if self.shooterRun is True and self.setpointReached is False:
+                # runs while shooter is activated but not yet at target RPM
+                self.intake.run('Forward')
+                self.indexer.run('Stop')
+                self.semicircle.run('Stop')
+
+            elif self.setpointReached is True:
+                # runs while shooter is activated and target RPM is reached
                 self.intake.run('Forward')
                 self.indexer.run('Forward')
-                self.semicircle.semicircleMotor.set(1)
+                self.semicircle.run('Forward')
+
+        elif 8.0 < self.timer.get() < 10:
+            self.drive.tankDrive(-0.5, -0.5)
+
+        elif self.timer.get() > 10.0:
+            self.drive.tankDrive(0, 0)
+
+        # # timer
+        # self.timer.reset()
+        # self.timer.start()
+        #
+        # # limelight
+        # self.tx = self.dashboard.limelight('tx')
+        #
+        # # encoder
+        # self.driveTrainEncoder = (self.drive.rearLeftEncoder.getSelectedSensorPosition() + self.drive.rearRightEncoder.getSelectedSensorPosition()) / 2
+        #
+        # # shooter
+        # self.shooter.setSetpoint('Top', 2000)
+        # self.shooter.setSetpoint('Bottom', 2000)
+        #
+        # # runs between 0 and 5 seconds
+        # if self.timer.get() < 5:
+        #     self.drive.turnToTarget(self.tx)
+        #     self.shooter.execute('Top')
+        #     self.shooter.execute('Bottom')
+        #     if abs(self.tx) < 2:
+        #         self.semicircle.run('Forward')
+        #
+        # # runs between 5 and 10
+        # elif 5 < self.timer.get() > 10:
+        #     if self.firstPeriodDone == False:
+        #         self.semicircle.run('Stop')
+        #         self.firstPeriodDone = True
+        #     self.shooter.setSetpoint('Top', 0)
+        #     self.shooter.setSetpoint('Bottom', 0)
+        #     if self.encoderReset1 == False:
+        #         self.drive.rearRightEncoder.setSelectedSensorPosition(0)
+        #         self.drive.rearLeftEncoder.setSelectedSensorPosition(0)
+        #         self.encoderReset1 = True
+        #     if self.turnAngle1 == False:
+        #         self.drive.turnAngle(-150)
+        #         self.turnAngle1 = True
+        #     if self.encoderReset2 == False:
+        #         self.drive.rearRightEncoder.setSelectedSensorPosition(0)
+        #         self.drive.rearLeftEncoder.setSelectedSensorPosition(0)
+        #         self.encoderReset2 = True
+        #     self.drive.drive.tankDrive(0.5, 0.5)
+        #     self.intake.run('Forward')
+        #     self.indexer.run('Forward')
+        #     self.semicircle.semicircleMotor.set(1)
+        #     if self.driveTrainEncoder > 16384:
+        #         self.drive.drive.stopMotor()
+        #     else:
+        #         pass
+        #
+        # # runs past 10 seconds
+        # if self.timer.hasPeriodPassed(10):
+        #     if self.encoderReset3 == False:
+        #         self.drive.rearRightEncoder.setSelectedSensorPosition(0)
+        #         self.drive.rearLeftEncoder.setSelectedSensorPosition(0)
+        #         self.encoderReset3 = True
+        #     if self.turnAngle2 == False and self.encoderReset3 == True:
+        #         self.drive.turnAngle(135)
+        #         self.turnAngle2 = True
+        #     if self.turnAngle3 == False and self.turnAngle2 == True:
+        #         self.drive.turnAngle(self.tx)
+        #         self.turnAngle3 = True
+        #     if self.turnAngle3 == True:
+        #         self.shooter.setSetpoint('Top', 2000)
+        #         self.shooter.setSetpoint('Bottom', 4000)
+        #         self.intake.run('Forward')
+        #         self.indexer.run('Forward')
+        #         self.semicircle.semicircleMotor.set(1)
 
     def teleopInit(self):
         self.drive.gearSolenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
-        # self.drive.navx.reset()
+        self.drive.navx.reset()
         self.drive.rearRightEncoder.setSelectedSensorPosition(0)
         self.drive.rearLeftEncoder.setSelectedSensorPosition(0)
 
@@ -204,6 +263,11 @@ class Manticore(wpilib.TimedRobot):
         self.dashboard.limelightHorizontalAngle(self.tx)
         self.distance = self.vision.getDistance(self.ty)
         self.dashboard.distance(self.distance)                  # displaying distance from target to dashboard
+
+        if 80 < self.distance < 200:
+            self.dashboard.distanceStatus(True)
+        else:
+            self.dashboard.distanceStatus(False)
 
         """ NavX """
         # self.navxAngle = self.drive.navx.getAngle()
@@ -289,12 +353,10 @@ class Manticore(wpilib.TimedRobot):
         # controller mapping for shooter
         self.shooterLaunch = self.xbox.getRawAxis(3)        # right trigger
         # sets shooter at a certain RPM if the trigger is being pressed
-        self.targetRPMTop = self.dashboard.getTestValues('RPM Top')
-        self.targetRPMBottom = self.dashboard.getTestValues('RPM Bottom')
-        # if self.distance < 170:
-        #     self.targetRPMTop = 3759 + (-22.3 * self.distance) + (0.0576 * (self.distance * self.distance))
-        # elif self.distance > 170:
-        #     self.targetRPMTop = -3330 + (46.1 * self.distance) + (-0.101 * (self.distance * self.distance))
+        if self.distance < 170:
+            self.targetRPMTop = 3759 + (-22.3 * self.distance) + (0.0576 * (self.distance * self.distance))
+        elif self.distance > 170:
+            self.targetRPMTop = -3330 + (46.1 * self.distance) + (-0.101 * (self.distance * self.distance))
         # self.targetRPMTop = 1000
         # self.targetRPMBottom = 2000
 
@@ -311,7 +373,6 @@ class Manticore(wpilib.TimedRobot):
             self.shooter.execute('Bottom')
             self.ballsInPossession = 0
             error = 100     # allowing 100 RPM error
-
             if (self.targetRPMTop - error) <= self.shooterRPMTop <= (self.targetRPMTop + error) and \
                     (self.targetRPMBottom - error) <= self.shooterRPMBottom <= (self.targetRPMBottom + error) and \
                     self.setpointReached is False:
@@ -352,7 +413,7 @@ class Manticore(wpilib.TimedRobot):
         if self.dpadForward is True:
             # ejects balls from intake
             self.intake.run('Reverse')
-            self.indexer.run('Stop')
+            self.indexer.flatIndexer.set(0.75)
             self.semicircle.run('Stop')
 
         elif self.dpadBackwards is True:
@@ -385,7 +446,7 @@ class Manticore(wpilib.TimedRobot):
             self.indexer.run('Stop')
             self.semicircle.run('Stop')
 
-        elif self.setpointReached is True:
+        elif self.shooterRun is True and self.setpointReached is True:
             # runs while shooter is activated and target RPM is reached
             self.intake.run('Forward')
             self.indexer.run('Forward')
@@ -396,6 +457,10 @@ class Manticore(wpilib.TimedRobot):
             self.intake.intakeMotor.set(-1)
             self.indexer.indexer.set(-1)
             self.semicircle.semicircleMotor.set(-1)
+
+        elif self.xbox.getRawButton(8) is True:
+            self.intake.intakeMotor.set(1)
+            self.semicircle.semicircleMotor.set(1)
 
         else:
             self.intake.run('Stop')
