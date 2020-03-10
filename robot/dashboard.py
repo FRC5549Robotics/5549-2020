@@ -37,6 +37,9 @@ class Dashboard:
         self.dashboard.putNumber('RPM Top', 0)
         self.dashboard.putNumber('RPM Bottom', 0)
 
+        self.dashboard.putNumber("Top Shooter RPM", 0)
+        self.dashboard.putNumber("Bottom Shooter RPM", 0)
+
         self.dashboard.putBoolean("Limit Switch Toggle", False)
         self.dashboard.putBoolean("Distance Range", False)
 
@@ -143,6 +146,13 @@ class Dashboard:
         else:
             self.dashboard.getBoolean("Distance Range", False)
 
+    def limelightLed(self, bool):
+        """ Allows for limit switch toggle """
+        if bool is True:
+            self.limelightDash.putNumber("ledMode", 3)
+        else:
+            self.limelightDash.putNumber("ledMode", 1)
+
 
     def getTestValues(self, var):
         """ place for test values """
@@ -172,7 +182,11 @@ class Dashboard:
         """ place to put diagnostic values """
         if var == 'Drive Train Left Encoder':
             self.dashboard.putNumber("Drive Train Left Encoder", value)
-        if var == 'Drive Train Right Encoder':
+        elif var == 'Drive Train Right Encoder':
             self.dashboard.putNumber("Drive Train Right Encoder", value)
-        if var == 'Drive Train Encoder':
+        elif var == 'Drive Train Encoder':
             self.dashboard.putNumber("Drive Train Encoder", value)
+        elif var == 'Top Shooter RPM':
+            self.dashboard.putNumber("Top Shooter RPM", value)
+        elif var == 'Bottom Shooter RPM':
+            self.dashboard.putNumber("Bottom Shooter RPM", value)

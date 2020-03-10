@@ -2,6 +2,7 @@
 import wpilib
 from ctre import *
 
+speed = 0.75
 
 class Semicircle:
     def __init__(self):
@@ -14,7 +15,6 @@ class Semicircle:
 
     def run(self, state):
         """ Run semicircle at set speed """
-        speed = 0.70
         if state == 'Forward':
             self.semicircleMotor.set(speed)
         elif state == 'Reverse':
