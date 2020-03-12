@@ -14,7 +14,7 @@ class Semicircle:
 
     def run(self, state):
         """ Run semicircle at set speed """
-        speed = 0.70
+        speed = 0.75
         if state == 'Forward':
             self.semicircleMotor.set(speed)
         elif state == 'Reverse':

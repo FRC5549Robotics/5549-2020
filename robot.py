@@ -232,10 +232,10 @@ class Manticore(wpilib.TimedRobot):
             self.limitSwitchOverride = False
 
         # set shooter PID
-        # self.shooter.setVarPID(self.dashboard.getTestValues('P Top'), self.dashboard.getTestValues('I Top'), self.dashboard.getTestValues('D Top'), self.dashboard.getTestValues('F Top'), 'Top')
-        # self.shooter.setVarPID(self.dashboard.getTestValues('P Bottom'), self.dashboard.getTestValues('I Bottom'), self.dashboard.getTestValues('D Bottom'), self.dashboard.getTestValues('F Bottom'), 'Bottom')
-        # self.shooter.setPID('Top')
-        # self.shooter.setPID('Bottom')
+        self.shooter.setVarPID(self.dashboard.getTestValues('P Top'), self.dashboard.getTestValues('I Top'), self.dashboard.getTestValues('D Top'), self.dashboard.getTestValues('F Top'), 'Top')
+        self.shooter.setVarPID(self.dashboard.getTestValues('P Bottom'), self.dashboard.getTestValues('I Bottom'), self.dashboard.getTestValues('D Bottom'), self.dashboard.getTestValues('F Bottom'), 'Bottom')
+        self.shooter.setPID('Top')
+        self.shooter.setPID('Bottom')
 
         # drive train encoders
         # self.driveTrainEncoder = (self.drive.rearLeftEncoder.getSelectedSensorPosition() + self.drive.rearRightEncoder.getSelectedSensorPosition()) / 2
@@ -299,7 +299,7 @@ class Manticore(wpilib.TimedRobot):
         # self.targetRPMBottom = 2000
 
         # sets shooter at a certain RPM if right trigger is being pressed
-        self.targetRPMBottom = self.targetRPMTop * 2        # introducing backspin
+        # self.targetRPMBottom = self.targetRPMTop * 2        # introducing backspin
         self.shooter.setSetpoint('Top', self.targetRPMTop)
         self.shooter.setSetpoint('Bottom', self.targetRPMBottom)
         self.setpointReached = False
@@ -310,8 +310,7 @@ class Manticore(wpilib.TimedRobot):
             self.shooter.execute('Top')
             self.shooter.execute('Bottom')
             self.ballsInPossession = 0
-            error = 100     # allowing 100 RPM error
-
+            error = 10000     # allowing 100 RPM error
             if (self.targetRPMTop - error) <= self.shooterRPMTop <= (self.targetRPMTop + error) and \
                     (self.targetRPMBottom - error) <= self.shooterRPMBottom <= (self.targetRPMBottom + error) and \
                     self.setpointReached is False:
