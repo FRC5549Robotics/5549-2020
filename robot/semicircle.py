@@ -2,6 +2,7 @@
 import wpilib
 from ctre import *
 
+speed = 0.75
 
 class Semicircle:
     def __init__(self):

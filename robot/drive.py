@@ -121,11 +121,11 @@ class Drive:
         elif 5 < angleLimelight < 15:
             nspeed = angleLimelight / 75
             self.drive.tankDrive(nspeed+0.3, nspeed+0.3)
-        elif 0 < angleLimelight < 5:
+        elif 2 < angleLimelight < 5:
             self.drive.tankDrive(0.4, 0.4)
         elif -2 < angleLimelight < 2:
             self.drive.stopMotor()
-        elif -5 < angleLimelight < 0:
+        elif -5 < angleLimelight < 2:
             self.drive.tankDrive(-0.4, -0.4)
         elif -15 < angleLimelight < -5:
             nspeed = angleLimelight / 75
